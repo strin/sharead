@@ -1,2 +1,9 @@
-.DS_Store
+# python
 *.pyc
+# env
+.ropeproject
+*.swp
+.DS_Store
+# data
+upload
+
