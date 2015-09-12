@@ -30,3 +30,16 @@ def parse_webkitform(request_body):
         "filename": filename
     }
 
+def parse_filename(filename):
+    """
+    Given a filename, parse the name and ext
+    Return (filename, ext)
+    """
+    dot_pos = filename.rfind('.')
+    if dot_pos == -1:
+        ext = ""
+    else:
+        ext = filename[dot_pos+1:]
+        filename = filename[:dot_pos]
+    return (filename, ext)
+

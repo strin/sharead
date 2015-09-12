@@ -14,38 +14,63 @@ $(function(){
         // This element will accept file drag/drop uploading
         dropZone: $('#drop'),
 
+        done: function(e, data) {
+            console.log(data.context);
+            data.context.find('#filename')[0].dataset.filehash = data.result.filehash
+        },
+
         // This function is called when a file is added to the queue;
         // either via the browse button, or via drag/drop:
         add: function (e, data) {
+            $.get('mustache/uploaded-item.html', function(template) {
+                var view = {
+                    filename: data.files[0].name,
+                    filesize: formatFileSize(data.files[0].size)
+                };
 
-            var tpl = $('<li class="working"><input type="text" value="0" data-width="48" data-height="48"'+
-                ' data-fgColor="#0788a5" data-readOnly="1" data-bgColor="#3e4043" /><p></p><span></span></li>');
+                var rendered = Mustache.render(template, view)
+                var tpl = $(rendered);
 
-            // Append the file name and file size
-            tpl.find('p').text(data.files[0].name)
-                         .append('<i>' + formatFileSize(data.files[0].size) + '</i>');
+                // Add the HTML to the UL element
+                data.context = tpl.appendTo(ul);
 
-            // Add the HTML to the UL element
-            data.context = tpl.appendTo(ul);
+                // Initialize the knob plugin
+                tpl.find('#progress').knob();
 
-            // Initialize the knob plugin
-            tpl.find('input').knob();
+                // Listen for clicks on the cancel icon
+                tpl.find('span').click(function(){
 
-            // Listen for clicks on the cancel icon
-            tpl.find('span').click(function(){
+                    if(tpl.hasClass('working')){
+                        jqXHR.abort();
+                    }
 
-                if(tpl.hasClass('working')){
-                    jqXHR.abort();
-                }
+                    tpl.fadeOut(function(){
+                        tpl.remove();
+                    });
 
-                tpl.fadeOut(function(){
-                    tpl.remove();
                 });
 
-            });
+                // Listen for filename changes.
+                tpl.find('#filename').change(function() {
+                    var filename = tpl.find('#filename')[0].value;
+                    var filehash = tpl.find('#filename')[0].dataset.filehash;
+                    $.post('file/update', {
+                        filename: JSON.stringify(filename),
+                        filehash: JSON.stringify(filehash)
+                    }, function(data) {
 
-            // Automatically upload the file once it is added to the queue
-            var jqXHR = data.submit();
+                    });
+                });
+
+                tpl.find("#filename").keyup(function(event){
+                    if(event.keyCode == 13){
+                        $(this).blur();
+                    }
+                });
+
+                // Automatically upload the file once it is added to the queue
+                var jqXHR = data.submit();
+            });
         },
 
         progress: function(e, data){
@@ -53,9 +78,9 @@ $(function(){
             // Calculate the completion percentage of the upload
             var progress = parseInt(data.loaded / data.total * 100, 10);
 
-            // Update the hidden input field and trigger a change
+            // Update the hidden progress field and trigger a change
             // so that the jQuery knob plugin knows to update the dial
-            data.context.find('input').val(progress).change();
+            data.context.find('#progress').val(progress).change();
 
             if(progress == 100){
                 data.context.removeClass('working');
@@ -93,3 +118,5 @@ $(function(){
     }
 
 });
+
+

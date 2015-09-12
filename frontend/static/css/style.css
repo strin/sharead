@@ -122,7 +122,7 @@ section, footer, header, aside{
     position: relative;
 }
 
-#upload ul li input{
+#upload ul li #progress{
     display: none;
 }
 
@@ -257,4 +257,22 @@ footer h2 i{
     position: relative;
     float: left;
     margin-top: 11px;
+}
+
+.upload-title {
+    display:block;
+    border: none;
+    background-color: #333639;
+    color: white;
+    outline: 0;
+    font-size: 15px; 
+    font-family: sans-serif;
+}
+
+.upload-title:hover {
+    background-color: #676C71;
+}
+
+.upload-title:focus {
+    background-color: #676C71;
 }
