@@ -1,3 +1,5 @@
+import shareread.storage.local as store
+
 def parse_webkitform(request_body):
     """
     Given the request body, this method parses the submitted webkit form.
@@ -42,4 +44,28 @@ def parse_filename(filename):
         ext = filename[dot_pos+1:]
         filename = filename[:dot_pos]
     return (filename, ext)
+
+try:
+    from wand.image import Image
+    def create_thumbnail(filehash):
+        with open('cache/temp.pdf', 'w') as pdf_stream:
+            file_stream = store.get_file(store.TEST_ACCESS_TOKEN, filehash)
+            pdf_stream.write(file_stream.read())
+        with Image(filename="cache/temp.pdf[0]") as image:
+            height_desired = 50
+            width = int(height_desired * image.width / image.height)
+            image.resize(width, height_desired)
+            image.save(filename='cache/thumbnail.png')
+        with open('cache/thumbnail.png', 'r') as thumb_stream:
+            thumb_path = 'thumb/' + filehash + '.png'
+            store.put_file(store.TEST_ACCESS_TOKEN, thumb_path, thumb_stream)
+        return thumb_path
+
+    def get_thumbnail(thumb_path):
+        return store.get_file(store.TEST_ACCESS_TOKEN, thumb_path).read()
+
+except ImportError as e:
+    print 'ImportError', e.message
+    def create_thumbnail(filehash):
+        return ''
 

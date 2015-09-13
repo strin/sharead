@@ -3,7 +3,7 @@ import sys
 import os
 from datetime import datetime
 
-TEST_ACCESS_TOKEN = str(datetime.now())
+TEST_ACCESS_TOKEN = 'strin'
 
 def _get_access_token():
     return str(datetime.now())
