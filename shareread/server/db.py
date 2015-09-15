@@ -1,6 +1,7 @@
 # database utils for server.
 import sqlite3 as sql
 import base64
+import json
 from datetime import datetime
 
 DB_FILE_NAME = 'shareread.sqlite'
@@ -14,7 +15,8 @@ class DBConn(object):
                     filename text,
                     fileext text,
                     upload_date text,
-                    thumb_path text)
+                    thumb_path text,
+                    tags text)
                     """)
         conn.execute("""CREATE TABLE IF NOT EXISTS recents
                     (filehash text,
@@ -100,7 +102,39 @@ def get_file_entry(filehash):
             return dict(row)
     return None
 
-def update_file_entry(filehash, filename, fileext = '', upload_date = '', thumb_path=''):
+def update_file_entry(filehash, **kwargs):
+    """
+    use DBConn to update a file entry incrementally.
+    Parameter
+    =========
+    filehash: required, to identify the file entry
+    kwargs: a dict of key-value modifications.
+    """
+    # allowed modifications keys.
+    whitelist = set([
+        "filename",
+        "fileext",
+        "tags",
+        "upload_date"
+        "thumb_path"
+    ])
+    kwargs = {key: encode_db_string(value)
+              for (key, value) in kwargs.items() if key in whitelist}
+    update_lang = ','.join(map(lambda key: key + "='%(" + key + ")s'",
+                               kwargs.keys()))
+    update_lang = """
+                    UPDATE meta
+                    SET %(update_lang)s
+                    WHERE filehash='%(filehash)s'
+                  """ % dict(update_lang=update_lang,
+                             filehash=filehash)
+    print 'update_lang', update_lang
+    with DBConn() as conn:
+        cursor = conn.cursor()
+        cursor.execute(update_lang % kwargs)
+
+def create_file_entry(filehash, filename, fileext = '',
+                      upload_date = '', thumb_path='', tags=[]):
     """
     use DBConn to update/insert a file entry
     Parameter
@@ -114,27 +148,43 @@ def update_file_entry(filehash, filename, fileext = '', upload_date = '', thumb_
     fileext = encode_db_string(fileext)
     upload_date = encode_db_string(upload_date)
     thumb_path = encode_db_string(thumb_path)
+    tags = encode_db_string(json.dumps(tags))
 
     with DBConn() as conn:
         cursor = conn.cursor()
         cursor.execute("""
                        SELECT * FROM meta WHERE filehash='%(filehash)s'
                        """ % dict(filehash=filehash))
+        data = dict(filehash=filehash,
+                    filename=filename,
+                    fileext=fileext,
+                    upload_date=upload_date,
+                    thumb_path=thumb_path,
+                    tags=tags)
         if cursor.fetchone(): # update entry if exists.
             cursor.execute("""
                         UPDATE meta
-                        SET filename='%(filename)s'
+                        SET filename='%(filename)s',
+                            fileext='%(fileext)s',
+                            upload_date='%(upload_date)s',
+                            thumb_path='%(thumb_path)s',
+                            tags='%(tags)s'
                         WHERE filehash='%(filehash)s'
-                        """ % dict(filehash=filehash,
-                                   filename=filename)
-                        )
+                        """ % data)
         else: # insert new entry if not exists.
             cursor.execute("""
-                        INSERT INTO meta (filehash, filename, fileext, upload_date, thumb_path) values
-                        ('%(filehash)s', '%(filename)s', '%(fileext)s', '%(upload_date)s', '%(thumb_path)s')
-                        """ % dict(filehash=filehash,
-                                   filename=filename,
-                                   fileext=fileext,
-                                   upload_date=upload_date,
-                                   thumb_path=thumb_path)
-                        )
+                        INSERT INTO meta
+                           (filehash,
+                           filename,
+                           fileext,
+                           upload_date,
+                           thumb_path,
+                           tags)
+                        VALUES
+                            ('%(filehash)s',
+                           '%(filename)s',
+                           '%(fileext)s',
+                           '%(upload_date)s',
+                           '%(thumb_path)s',
+                           '%(tags)s')
+                        """ % data)

@@ -9,7 +9,8 @@ from datetime import datetime
 import shareread.storage.local as store
 from shareread.server.utils import (parse_webkitform, parse_filename,
                                     create_thumbnail, get_thumbnail)
-from shareread.server.db import (update_file_entry, add_recent_entry)
+from shareread.server.db import (create_file_entry, update_file_entry,
+                                 add_recent_entry)
 from shareread.server.recents import (RECENTS_ADD, RECENTS_UPDATE, fetch_num_activities)
 
 def TemplateRenderHandler(template):
@@ -41,7 +42,7 @@ class UploadSubmitHandler(web.RequestHandler):
         # create thumbnail.
         thumb_path = create_thumbnail(filehash)
         # update db.
-        update_file_entry(filehash, filename, ext, upload_date, thumb_path=thumb_path)
+        create_file_entry(filehash, filename, ext, upload_date, thumb_path=thumb_path)
         add_recent_entry(filehash, action_type=RECENTS_ADD)
         self.write({
             'filehash':filehash,
@@ -49,16 +50,38 @@ class UploadSubmitHandler(web.RequestHandler):
             'response':'OK'
         })
 
+class FileDownloadHanlder(web.RequestHandler):
+    def get(self, filehash):
+        data = store.get_file(store.TEST_ACCESS_TOKEN, filehash).read()
+        self.set_header('Content-Type', 'application/pdf')
+        self.write(data)
+
 class FileUpdateHandler(web.RequestHandler):
     def post(self):
+        arguments = set(self.request.arguments)
+        # filehash is required.
         filehash = json.loads(self.get_argument('filehash'))
-        filename = json.loads(self.get_argument('filename'))
+        update_dict = dict()
+        ##TODO(tianlins): isolate encoder/decoding for updates.
+        for key in arguments:
+            if key == 'filehash':
+                continue
+            if key == 'tags': # for tags, we save json directly.
+                value = self.get_argument(key)
+            else:
+                value = json.loads(self.get_argument(key))
+            update_dict[key] = value
         # update db.
-        update_file_entry(filehash, filename)
+        update_file_entry(filehash, **update_dict)
         add_recent_entry(filehash, action_type=RECENTS_UPDATE)
         self.write({
             'response':'OK'
         })
+
+class FileTagHandler(web.RequestHandler):
+    def post(self):
+        tags = self.get_argument('tags')
+
 
 class RecentItemsHandler(web.RequestHandler):
     def get(self):
@@ -82,6 +105,7 @@ handlers = [
     (r"/upload-submit", UploadSubmitHandler),
     (r"/file/update", FileUpdateHandler),
     (r"/file/thumbnail/(.*)", FileThumbnailHandler),
+    (r"/file/download/(.*)", FileDownloadHanlder),
     (r"/upload", TemplateRenderHandler('upload.html')),
     (r"/recents", TemplateRenderHandler('recents.html')),
     (r"/recents/fetch", RecentItemsHandler),
@@ -93,7 +117,6 @@ settings = {
     "debug": True,
     "template_path": "frontend/template/"
 }
-
 
 if __name__ == "__main__":
     application = web.Application(handlers, **settings)

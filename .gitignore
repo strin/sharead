@@ -7,4 +7,6 @@
 # data
 upload
 *.sqlite
+# cache
+cache
 

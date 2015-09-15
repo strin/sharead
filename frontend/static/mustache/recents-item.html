@@ -1,5 +1,16 @@
-<li class="recents-item">
+<li class="recents-item" style="height: 80px;">
 	<img class="thumbnail" src="file/thumbnail/{{thumb_path}}">
-  	<h3>{{filename}}</h3>
-  	<p></p>
+	<div>
+		<a class="anchor" href="file/download/{{filehash}}">
+	  		<div class="recents-item-filename">{{filename}}</div>
+	  	</a>
+	  	<br>
+	  	<p class="recents-details-hide recents-details">
+	  		<select id="selector_{{fileid}}" data-placeholder="Your Favorite Types of Bear" multiple class="recents-tag chosen-select" tabindex="3">
+	  			<option value="icml">icml</option>
+	  			<option value="nips">nips</option>
+	  			<option value="uai">uai</option>
+            </select>
+	  	</p>
+	  </div>
 </li>
