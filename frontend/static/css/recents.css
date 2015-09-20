@@ -109,7 +109,7 @@ li:hover {
 }
 
 .chosen-results {
-  width: 300px;
+  width: 100%;
 }
 
 .chosen-results > li{
@@ -122,5 +122,15 @@ li:hover {
 
 .chosen-drop {
   position: relative;
+  border: none;
   z-index: 100;
+}
+
+/* searchbar */
+.searchbar {
+  width: 100%;
+}
+
+.searchbar-select {
+  width: 100%;
 }

@@ -66,7 +66,7 @@ $(function() {
 				fileid += 1;
 			}
 			// activate chosen select plugins.
-			$('.chosen-select').chosen({
+			$('.recents-tag.chosen-select').chosen({
 				create_option: true,
 				skip_no_results: true
 			});
@@ -75,4 +75,9 @@ $(function() {
 
 	// fetch initial num activities.
 	fetch_activities(NUM_ACTIVITIES_PER_FETCH); 
+
+	// initialize search bar.
+	$('.searchbar .chosen-select').searchbar({
+		skip_no_results: true
+	});
 });
