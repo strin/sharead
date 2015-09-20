@@ -10,6 +10,7 @@ class DBConn(object):
     def __enter__(self):
         conn = sql.connect(DB_FILE_NAME)
         conn.row_factory = sql.Row
+        # create the file metadata table.
         conn.execute("""CREATE TABLE IF NOT EXISTS meta
                     (filehash text,
                     filename text,
@@ -18,11 +19,18 @@ class DBConn(object):
                     thumb_path text,
                     tags text)
                     """)
+        # create the recents table.
         conn.execute("""CREATE TABLE IF NOT EXISTS recents
                     (filehash text,
                      action_type text,
                      action_date text)
                     """)
+        # create the table for inverted indexing.
+        conn.execute("""
+                     CREATE TABLE IF NOT EXISTS inverted
+                     (tag text PRIMARY KEY,
+                     filehashes text)
+                     """)
         conn.commit()
         self.conn = conn
         return conn
@@ -188,3 +196,52 @@ def create_file_entry(filehash, filename, fileext = '',
                            '%(thumb_path)s',
                            '%(tags)s')
                         """ % data)
+
+def update_inverted_index(tags, filehash):
+    """
+    use DBConn to update the inverted index table
+    """
+    with DBConn() as conn:
+        cursor = conn.cursor()
+        for tag in tags:
+            #tag = encode_db_string(tag)
+            cursor.execute("""
+                        SELECT * FROM inverted
+                           WHERE tag=:tag
+                        """, dict(tag=tag))
+            result = cursor.fetchone()
+            if result:
+                filehashes = json.loads(result['filehashes'])
+                filehashes.append(filehash)
+                cursor.execute("""
+                               UPDATE inverted
+                               SET filehashes=:filehashes
+                               WHERE tag=:tag
+                               """,
+                               dict(tag=tag, filehashes=json.dumps(filehashes)))
+            else:
+                filehashes = [filehash]
+                cursor.execute("""
+                               INSERT INTO inverted
+                               (tag, filehashes)
+                               VALUES
+                               (:tag, :filehashes)
+                               """, dict(tag=tag, filehashes=json.dumps(filehashes)))
+
+def filter_by_inverted_index(tags):
+    """
+    use DBConn to filter the filehashes based on the tags given
+    """
+    with DBConn() as conn:
+        cursor = conn.cursor()
+        result = None
+        for tag in tags:
+            cursor.execute("""
+                            SELECT * FROM inverted
+                            WHERE tag=:tag
+                            """, dict(tag=tag))
+            row = cursor.fetchone()
+            filehash_set = set(json.loads(row['filehashes']))
+            result = result.intersection(filehash_set) if result else filehash_set
+    return result
+

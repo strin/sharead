@@ -10,7 +10,7 @@ import shareread.storage.local as store
 from shareread.server.utils import (parse_webkitform, parse_filename,
                                     create_thumbnail, get_thumbnail)
 from shareread.server.db import (create_file_entry, update_file_entry,
-                                 add_recent_entry)
+                                 add_recent_entry, update_inverted_index, filter_by_inverted_index)
 from shareread.server.recents import (RECENTS_ADD, RECENTS_UPDATE, fetch_num_activities)
 
 def TemplateRenderHandler(template):
@@ -74,14 +74,11 @@ class FileUpdateHandler(web.RequestHandler):
         # update db.
         update_file_entry(filehash, **update_dict)
         add_recent_entry(filehash, action_type=RECENTS_UPDATE)
+        if 'tags' in update_dict: # update inverted-index table for search.
+            update_inverted_index(tags, filehash)
         self.write({
             'response':'OK'
         })
-
-class FileTagHandler(web.RequestHandler):
-    def post(self):
-        tags = self.get_argument('tags')
-
 
 class RecentItemsHandler(web.RequestHandler):
     def get(self):
@@ -97,6 +94,22 @@ class FileThumbnailHandler(web.RequestHandler):
         self.set_header('Content-Type', 'image/png')
         self.write(get_thumbnail(thumb_path))
 
+class SearchHandler(web.RequestHandler):
+    """
+    Handles search / filter requests from client
+    Each request is a HTTP Post with the following arguments:
+        tags (list of JSON-encoded str): a list of file tags.
+        keywords (JSON-encoded str): a string of search input.
+    """
+    def post(self):
+        tags = json.loads(self.get_argument('tags'))
+        keywords = json.loads(self.get_argument('keywords'))
+        filehashes = filter_by_inverted_index(tags)
+        filehashes = list(filehashes) # json convertible.
+        self.write({
+            'filehashes': filehashes
+        })
+
 handlers = [
     (r"/img/(.*)", web.StaticFileHandler, {"path": "frontend/static/img/"}),
     (r"/css/(.*)", web.StaticFileHandler, {"path": "frontend/static/css/"}),
@@ -106,6 +119,7 @@ handlers = [
     (r"/file/update", FileUpdateHandler),
     (r"/file/thumbnail/(.*)", FileThumbnailHandler),
     (r"/file/download/(.*)", FileDownloadHanlder),
+    (r"/search", SearchHandler),
     (r"/upload", TemplateRenderHandler('upload.html')),
     (r"/recents", TemplateRenderHandler('recents.html')),
     (r"/recents/fetch", RecentItemsHandler),
