@@ -1,0 +1,270 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"positio",
+				"positionElements〔function〕"
+			],
+			[
+				"anim",
+				"animation"
+			],
+			[
+				"ani",
+				"animation"
+			],
+			[
+				"0",
+				"000000"
+			],
+			[
+				"op",
+				"opacity	Style CSS"
+			],
+			[
+				"tags",
+				"tagsChosen"
+			],
+			[
+				"sele",
+				"selectorId"
+			],
+			[
+				"pad",
+				"padding-top"
+			],
+			[
+				"acti",
+				"activity"
+			],
+			[
+				"file",
+				"filename"
+			],
+			[
+				"fileha",
+				"filehashes"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "template/recents.html",
+			"settings":
+			{
+				"buffer_size": 1608,
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 87.0,
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"package",
+				"Preferences: Browse Packages"
+			]
+		],
+		"width": 593.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/tianlins/Dropbox/Garage/DeepRL/Arcade-Learning-Environment/README-SDL.txt",
+		"/Applications/mvim",
+		"/Users/tianlins/Project/shareread/frontend/static/js/recents.js",
+		"/Users/tianlins/Project/shareread/frontend/static/css/recents.css",
+		"/Users/tianlins/Project/shareread/frontend/static/mustache/recents-item.html",
+		"/Users/tianlins/Project/shareread/frontend/template/recents.html",
+		"/Users/tianlins/Dropbox/Stanford/tianlins-homepage/index.html",
+		"/Users/tianlins/Project/shareread/frontend/template/upload.html",
+		"/Users/tianlins/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
+		"/Users/tianlins/Project/shareread/frontend/static/js/upload.js",
+		"/Users/tianlins/Project/shareread/frontend/static/js/script.js",
+		"/Users/tianlins/Project/shareread/README.md",
+		"/Users/tianlins/Dropbox/Garage/mini-upload-form/upload.php",
+		"/Library/Python/2.7/site-packages/tornado/web.py",
+		"/Applications/Automator/open-in-vim-tab.app/Contents/document.wflow",
+		"/Users/tianlins/Dropbox/Autosky/AFC/Stanford/stmt.csv",
+		"/Users/tianlins/Dropbox/Autosky/AFC/Stanford/analyze.py",
+		"/System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/SocketServer.py"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"projects",
+			"Slide",
+			"cv_tianlin_shi_stanford_2015",
+			"cv_tianlin_s",
+			"hr",
+			"project",
+			"toggle(",
+			"onclick",
+			"education",
+			"index",
+			"form",
+			"upload",
+			"input",
+			"sans",
+			"font",
+			"progress",
+			"formatFileSize",
+			"ads",
+			"assets/js",
+			"dragndropimage"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "template/recents.html",
+					"settings":
+					{
+						"buffer_size": 1608,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true
+}
