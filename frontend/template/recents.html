@@ -10,7 +10,7 @@
 		<!-- The main CSS file -->
 		<link href="css/chosen.css" rel="stylesheet" />
 		<link href="css/recents.css" rel="stylesheet" />
-		<!-- <link href="css/bootstrap.min.css" rel="stylesheet" /> -->
+		<link href="css/glyphicon.css" rel="stylesheet" />
 
 		<!-- JavaScript Includes -->
 		<script src="js/jquery.min.js"></script>
@@ -29,25 +29,28 @@
 
 	<body>
 		<div class="container">
-			<div style="width: 80%; display: inline-block;">
+			<div style="width: 94%; display: inline-block;">
 				<div class="searchbar">
-			  		<select id="searchbar-selector" data-placeholder="Your Favorite Types of Bear" multiple class="searchbar-select chosen-select" tabindex="3">
+			  		<select id="searchbar_selector" data-placeholder="Search by tags or keywords " multiple class="searchbar-select chosen-select" tabindex="3">
 			  			<option value="icml">icml</option>
 			  			<option value="nips">nips</option>
 			  			<option value="uai">uai</option>
 		            </select>
 				</div>
 			</div>
-			<div style="width: 15%; display: inline-block;">
-				<a href="#" class="btn btn-info btn-lg">
-			      <span class="glyphicon glyphicon-search"></span> Search
-			    </a>
+
+			<div style="width: 5%; display: inline-block;">
+			     <span class="glyphicon glyphicon-search"></span>
 			</div>
+
+			<hr>
+
 			<ul id="recents-container" class="recents-container">
 			</ul>
 		</div>
 
 		<!-- Our main JS file -->
+		<script src="js/store.js"></script>
 		<script src="js/client.js"></script>
 		<script src="js/recents.js"></script>
 	</body>

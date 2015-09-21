@@ -5,7 +5,7 @@
   overflow: visible;
 }
 
-.recents-item .thumbnail {
+.recents-item .recents-file-thumbnail {
   border: solid;
   border-width: 1px;
   border-color: gray;
@@ -79,6 +79,8 @@ li:hover {
 
 .chosen-container-multi .chosen-choices {
   height: 25px !important;
+  padding-right: 0px;
+  padding-left: 0px;
   border: none;
   background-image: none;
   background-color: none;

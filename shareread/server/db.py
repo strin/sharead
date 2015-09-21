@@ -126,7 +126,11 @@ def update_file_entry(filehash, **kwargs):
         "upload_date"
         "thumb_path"
     ])
-    kwargs = {key: encode_db_string(value)
+    def process_meta(key, value):
+        if key == "tags": # use json encoding.
+            return json.dumps(value)
+        return encode_db_string(value)
+    kwargs = {key: process_meta(key, value)
               for (key, value) in kwargs.items() if key in whitelist}
     update_lang = ','.join(map(lambda key: key + "='%(" + key + ")s'",
                                kwargs.keys()))
@@ -232,16 +236,17 @@ def filter_by_inverted_index(tags):
     """
     use DBConn to filter the filehashes based on the tags given
     """
+    result = None
     with DBConn() as conn:
         cursor = conn.cursor()
-        result = None
         for tag in tags:
             cursor.execute("""
                             SELECT * FROM inverted
                             WHERE tag=:tag
                             """, dict(tag=tag))
             row = cursor.fetchone()
-            filehash_set = set(json.loads(row['filehashes']))
-            result = result.intersection(filehash_set) if result else filehash_set
-    return result
+            if row:
+                filehash_set = set(json.loads(row['filehashes']))
+                result = result.intersection(filehash_set) if result else filehash_set
+    return result if result else set()
 

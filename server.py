@@ -9,7 +9,7 @@ from datetime import datetime
 import shareread.storage.local as store
 from shareread.server.utils import (parse_webkitform, parse_filename,
                                     create_thumbnail, get_thumbnail)
-from shareread.server.db import (create_file_entry, update_file_entry,
+from shareread.server.db import (create_file_entry, update_file_entry, get_file_entry,
                                  add_recent_entry, update_inverted_index, filter_by_inverted_index)
 from shareread.server.recents import (RECENTS_ADD, RECENTS_UPDATE, fetch_num_activities)
 
@@ -66,18 +66,26 @@ class FileUpdateHandler(web.RequestHandler):
         for key in arguments:
             if key == 'filehash':
                 continue
-            if key == 'tags': # for tags, we save json directly.
-                value = self.get_argument(key)
-            else:
-                value = json.loads(self.get_argument(key))
+            value = json.loads(self.get_argument(key))
             update_dict[key] = value
         # update db.
         update_file_entry(filehash, **update_dict)
         add_recent_entry(filehash, action_type=RECENTS_UPDATE)
         if 'tags' in update_dict: # update inverted-index table for search.
-            update_inverted_index(tags, filehash)
+            update_inverted_index(update_dict['tags'], filehash)
         self.write({
             'response':'OK'
+        })
+
+class FileMetaHandler(web.RequestHandler):
+    """
+    request file metadata.
+    """
+    def post(self):
+        filehashes = json.loads(self.get_argument('filehashes'))
+        meta_by_filehash = {filehash: get_file_entry(filehash) for filehash in filehashes}
+        self.write({
+            'meta_by_filehash':meta_by_filehash
         })
 
 class RecentItemsHandler(web.RequestHandler):
@@ -114,9 +122,11 @@ handlers = [
     (r"/img/(.*)", web.StaticFileHandler, {"path": "frontend/static/img/"}),
     (r"/css/(.*)", web.StaticFileHandler, {"path": "frontend/static/css/"}),
     (r"/js/(.*)", web.StaticFileHandler, {"path": "frontend/static/js/"}),
+    (r"/fonts/(.*)", web.StaticFileHandler, {"path": "frontend/static/fonts/"}),
     (r"/mustache/(.*)", web.StaticFileHandler, {"path": "frontend/static/mustache/"}),
     (r"/upload-submit", UploadSubmitHandler),
     (r"/file/update", FileUpdateHandler),
+    (r"/file/meta", FileMetaHandler),
     (r"/file/thumbnail/(.*)", FileThumbnailHandler),
     (r"/file/download/(.*)", FileDownloadHanlder),
     (r"/search", SearchHandler),

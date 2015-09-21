@@ -1,22 +1,16 @@
 $(function() {
 	var NUM_ACTIVITIES_PER_FETCH = 10;
-	var filehashes = [];
-	var activities_by_filehash = {};
+	var client = sharereadClient;
+	var store = sharereadStore;
 
-	function fetch_activities(num_activities) {
-		$.get('recents/fetch', function(data) {
-			filehashes = filehashes.concat(data.filehashes)
-			activities_by_filehash = $.extend(activities_by_filehash, data.activities_by_filehash);
-			render_new_activities(data);
-		});
-	}
-
-	function render_new_activities(data) {
+	function render_activities() {
 		$.get('mustache/recents-item.html', function(template) {
+			// clear container.
+			$('#recents-container').html("");
 			// render items.
 			var fileid = 0;
-			for(var filehash of data.filehashes) {
-				var activity = data.activities_by_filehash[filehash];
+			for(var filehash of store.activeFilehashes) {
+				var activity = store.metaByFilehash[filehash];
 				var ul = $('#recents-container');
 				var view = {
 					filehash: filehash,
@@ -26,20 +20,17 @@ $(function() {
 				};
 				var rendered = Mustache.render(template, view)
                 var tpl = $(rendered);
-				data.context = tpl.appendTo(ul);
+                tpl.appendTo(ul);
 
 				// on select change, send new tags to server.
 				tpl.find('.recents-tag').change(_.bind(function(tpl, filehash) {
 					// get list of all tags.
-					var tags = $.map(tpl.find('.recents-tag')[0].children, function(child) {
-						return child.value;
+					var chosen = tpl.find('.recents-tag').data('chosen');
+					var dataChosen = _.filter(chosen.results_data, function(data) {
+						return data.selected;
 					});
-					var selectorId = tpl.find('.recents-tag')[0].id;
-					var selectorIdChosen = selectorId + '_chosen';
-					var closeActions = tpl.find('#' + selectorIdChosen + ' .chosen-choices .search-choice .search-choice-close');
-					var tagsChosen = $.map(closeActions, function(action) {
-						var index = action.dataset.optionArrayIndex;
-						return tags[index];
+					var tagsChosen = _.map(dataChosen, function(data) {
+						return data.text;
 					});
 					console.log('tagsChosen', tagsChosen);
 					sharereadClient.updateFile(filehash, {
@@ -74,10 +65,38 @@ $(function() {
 	}
 
 	// fetch initial num activities.
-	fetch_activities(NUM_ACTIVITIES_PER_FETCH); 
+	client.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities);
 
 	// initialize search bar.
-	$('.searchbar .chosen-select').searchbar({
+	var searchbar = $('.searchbar .chosen-select').searchbar({
 		skip_no_results: true
+	});
+
+	$('#searchbar_selector').change(function() {
+		// searchbar change event.
+		var chosen = $('.searchbar .chosen-select').data('chosen');
+		var dataChosen = _.filter(chosen.results_data, function(data) {
+			return data.selected;
+		});
+		var tagsChosen = _.map(dataChosen, function(data) {
+			return data.text;
+		});
+
+		if(tagsChosen.length > 0) { // do filter.
+			sharereadClient.searchFile(tagsChosen, render_activities);	
+		}else{
+			sharereadClient.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities);
+		}
+		
+		// var tags = $.map($('#searchbar_selector')[0].children, function(child) {
+		// 	return child.value;
+		// });
+		// var closeActions = $('#searchbar_selector_chosen .chosen-choices .search-choice .search-choice-close');
+		// console.log('closeActions', closeActions);
+		// var tagsChosen = $.map(closeActions, function(action) {
+		// 	var index = action.dataset.optionArrayIndex;
+		// 	return tags[index];
+		// });
+		// console.log(tagsChosen);
 	});
 });
