@@ -15,9 +15,9 @@ $(function(){
         dropZone: $('#drop'),
 
         done: function(e, data) {
-            console.log(data.context);
             data.context.find('#filename')[0].dataset.filehash = data.result.filehash
             data.context.find('#filename')[0].value = data.result.filename
+            window.location.href = 'recents'
         },
 
         // This function is called when a file is added to the queue;

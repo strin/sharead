@@ -3,6 +3,9 @@
 	[
 		{
 			"path": "static"
+		},
+		{
+			"path": "template"
 		}
 	]
 }

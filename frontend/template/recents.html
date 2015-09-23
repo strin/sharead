@@ -6,11 +6,15 @@
 		<title>ShareRead - A Collaborative Paper Reading Experience.</title>
 
 		<!-- Google web fonts -->
+		<link href="http://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700" rel='stylesheet' />
 
 		<!-- The main CSS file -->
 		<link href="css/chosen.css" rel="stylesheet" />
 		<link href="css/recents.css" rel="stylesheet" />
 		<link href="css/glyphicon.css" rel="stylesheet" />
+
+		<!-- file upload CSS file -->
+		<link href="css/upload.css" rel="stylesheet" />
 
 		<!-- JavaScript Includes -->
 		<script src="js/jquery.min.js"></script>
@@ -19,15 +23,92 @@
 		<!-- jQuery chosen -->
 		<script src="js/chosen.jquery.min.js"></script>
         <script src="js/searchbar.min.js"></script>
+		
+		<!-- jQuery File Upload Dependencies -->
+		<script src="js/jquery.ui.widget.js"></script>
+		<script src="js/jquery.iframe-transport.js"></script>
+		<script src="js/jquery.fileupload.js"></script>
 
 		<!-- Underscore Functional Programming -->
 		<script src="js/underscore-min.js"></script>		
-
+	
 		<!-- Mustache Templating Engine -->
 		<script src="js/mustache.min.js"></script>
+		
+
+		<style type="text/css">
+			html, body {
+				width: 100%;
+				height: 100%;
+				position: relative;
+			}
+			.recents-upload {
+				margin: 0px 0px 0px 0px !important;
+				box-sizing: border-box;
+				padding: 100px 100px 100px 100px !important;
+				width: 100% !important;
+				height: 100% !important;
+				position: absolute;
+				opacity: 0.0;
+				z-index: -100;
+			}
+
+			.recents-upload-dragover {
+				margin: 0px 0px 0px 0px !important;
+				box-sizing: border-box;
+				padding: 100px 100px 100px 100px !important;
+				width: 100% !important;
+				height: 100% !important;
+				position: absolute;
+				opacity: 0.9;
+				z-index: 100;
+				transition: opacity .25s ease-in-out;
+			    -moz-transition: opacity .25s ease-in-out;
+			    -webkit-transition: opacity .25s ease-in-out;
+			}
+
+			.recents-upload ul {
+				width: 100% !important;
+			}
+
+			.recents-upload #drop {
+				height: 200px;
+			}
+		</style>
+		
 	</head>
 
 	<body>
+		<!-- file upload plugin -->
+		<form id="upload" method="post" class="recents-upload" action="upload-submit" enctype="multipart/form-data" >
+			<div id="drop">
+				Drop Here
+
+				<!-- <a>Browse</a> -->
+				<input type="file" name="upl" multiple />
+			</div>
+
+			<ul>
+				<!-- The file uploads will be shown here -->
+			</ul>
+
+		</form>
+
+		<script>
+			$(document).on("dragover", function() {
+				// seems cannot switch the order of the two
+				$('.recents-upload').toggleClass('recents-upload-dragover');
+				$('.recents-upload').toggleClass('recents-upload');	
+			});
+
+			$(document).on("dragout", function() {
+				// seems cannot switch the order of the two
+				$('.recents-upload').toggleClass('recents-upload');	
+				$('.recents-upload').toggleClass('recents-upload-dragover');
+			});
+		</script>
+		
+		<!-- main recents container -->
 		<div class="container">
 			<div style="width: 94%; display: inline-block;">
 				<div class="searchbar">
@@ -53,5 +134,7 @@
 		<script src="js/store.js"></script>
 		<script src="js/client.js"></script>
 		<script src="js/recents.js"></script>
+		<!-- JS for drag & uploading files -->
+		<script src="js/upload.js"></script>
 	</body>
 </html>

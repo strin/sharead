@@ -14,7 +14,7 @@
 --------------------------*/
 
 
-html{
+/*html{
     background-color:#ebebec;
 
     background-image:-webkit-radial-gradient(center, #ebebec, #b4b4b4);
@@ -27,7 +27,7 @@ html{
 body{
     font:15px/1.3 Arial, sans-serif;
     color: #4f4f4f;
-}
+}*/
 
 a, a:visited {
     outline:none;
@@ -74,7 +74,7 @@ section, footer, header, aside{
     text-align: center;
     text-transform: uppercase;
 
-    font-size:16px;
+    font-size:64px;
     font-weight:bold;
     color:#7f858a;
 }
