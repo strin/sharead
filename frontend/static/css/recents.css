@@ -19,11 +19,29 @@
   color: black;
 }
 
+.recents-file-meta {
+  position: relative;
+}
+
 .recents-item-filename {
   overflow: hidden;
   text-overflow: ellipsis;
   font: bold 15px Helvetica, Verdana, sans-serif;
+  border: none;
+  position: relative;
+  width: 350px;
+  outline: 0;
+  background-color: transparent;
 }
+
+.recents-item-filename:hover {
+    background-color: #ffffff;
+}
+
+.recents-item-filename:focus {
+    background-color: #ffffff;
+}
+
 
 .recents-details-hide {
   transition: opacity .25s ease-in-out;
@@ -54,8 +72,8 @@ ul {
 li img {
   float: left;
   margin: 0 15px 0 0;
-  height: 100%;
-  width: auto;
+  width: 50px;
+  height: auto;
 }
  
 li p {
@@ -135,4 +153,9 @@ li:hover {
 
 .searchbar-select {
   width: 100%;
+}
+
+/* glyphicon modifications */
+.glyphicon-red {
+  color: red;
 }

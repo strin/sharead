@@ -52,6 +52,44 @@ $(function() {
 					details.addClass('recents-details-hide');
 				}, {}, tpl));
 
+				// on click edit button, toggle edit mode.
+				var toggleLink = function(el) {
+					console.log('href', el.attr('href'));
+					console.log('el', el);
+					if(el.attr('href')) {
+						el.data('href', el.attr('href'));
+						el.removeAttr('href');	
+					}else{
+						el.attr('href', el.data('href'));
+					}
+				}
+
+				tpl.find('.recents-edit-btn').click(_.bind(function(tpl) {
+					if(tpl.find('.recents-item-filename').prop('disabled') == true) {
+						toggleLink(tpl.find('.anchor'));
+						tpl.find('.recents-item-filename').prop('disabled', false);
+						tpl.find('.recents-item-filename').select();
+					}else{
+						toggleLink(tpl.find('.anchor'));
+						tpl.find('.recents-item-filename').prop('disabled', true);
+					}
+					tpl.find('.recents-edit-btn').toggleClass('glyphicon-red')
+				}, {}, tpl));
+
+				// on change filename.
+				tpl.find('#filename').change(_.bind(function(tpl, filehash) {
+                    var filename = tpl.find('#filename')[0].value;
+                    console.log('filename', filename);
+                    console.log('filehash', filehash);
+                    $.post('file/update', {
+                        filename: JSON.stringify(filename),
+                        filehash: JSON.stringify(filehash)
+                    }, function(data) {
+
+                    });
+                }, {}, tpl, filehash));
+
+
 				tpl.mouseleave();
 
 				fileid += 1;
