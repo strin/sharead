@@ -122,6 +122,7 @@ handlers = [
     (r"/img/(.*)", web.StaticFileHandler, {"path": "frontend/static/img/"}),
     (r"/css/(.*)", web.StaticFileHandler, {"path": "frontend/static/css/"}),
     (r"/js/(.*)", web.StaticFileHandler, {"path": "frontend/static/js/"}),
+    (r"/coffee/(.*)", web.StaticFileHandler, {"path": "frontend/static/coffee/"}),
     (r"/fonts/(.*)", web.StaticFileHandler, {"path": "frontend/static/fonts/"}),
     (r"/mustache/(.*)", web.StaticFileHandler, {"path": "frontend/static/mustache/"}),
     (r"/upload-submit", UploadSubmitHandler),
