@@ -31,6 +31,12 @@ class DBConn(object):
                      (tag text PRIMARY KEY,
                      filehashes text)
                      """)
+        # create the table for some global info.
+        conn.execute("""
+                     CREATE TABLE IF NOT EXISTS info
+                     (key text PRIMARY KEY,
+                     value text)
+                     """)
         conn.commit()
         self.conn = conn
         return conn
@@ -38,6 +44,45 @@ class DBConn(object):
     def __exit__(self, type, value, traceback):
         self.conn.commit()
         self.conn.close()
+
+class MiscInfo(object):
+    @property
+    def all_tags(self):
+        with DBConn() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                           SELECT * FROM info WHERE key='tags'
+                           """)
+            row = cursor.fetchone()
+            if row:
+                return json.loads(row['value'])
+        return []
+
+    @all_tags.setter
+    def all_tags(self, tags):
+        value = json.dumps(tags)
+        with DBConn() as conn:
+            cursor = conn.cursor()
+            if self.all_tags:
+                cursor.execute("""
+                               UPDATE info
+                               SET value=:value
+                               WHERE key='tags'
+                               """, dict(value=value))
+            else:
+                cursor.execute("""
+                               INSERT INTO info
+                               (key, value)
+                               VALUES
+                               ('tags', :value)
+                               """, dict(value=value))
+
+    def merge_tags(self, new_tags):
+        """ merge new_tags into existing tags
+        """
+        tags = set(self.all_tags)
+        tags = tags.union(set(new_tags))
+        self.all_tags = list(tags)
 
 def encode_db_string(text):
     if not text:
@@ -137,6 +182,10 @@ def update_file_entry(filehash, **kwargs):
         if key == "tags": # use json encoding.
             return json.dumps(value)
         return encode_db_string(value)
+    # merge into global tags.
+    if 'tags' in kwargs:
+        MiscInfo().merge_tags(kwargs['tags'])
+
     kwargs = {key: encode_meta(key, value)
               for (key, value) in kwargs.items() if key in whitelist}
     update_lang = ','.join(map(lambda key: key + "='%(" + key + ")s'",
@@ -166,6 +215,9 @@ def create_file_entry(filehash, filename, fileext = '',
     fileext = encode_db_string(fileext)
     upload_date = encode_db_string(upload_date)
     thumb_path = encode_db_string(thumb_path)
+    # merge into global tags.
+    if 'tags' in kwargs:
+        MiscInfo().merge_tags(kwargs['tags'])
     tags = encode_db_string(json.dumps(tags))
 
     with DBConn() as conn:

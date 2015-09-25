@@ -14,9 +14,12 @@
 	  	
 	  	<p class="recents-details-hide recents-details">
 	  		<select id="selector_{{fileid}}" data-placeholder="Add tags to this paper." multiple class="recents-tag chosen-select" tabindex="3">
-	  			<option value="icml">icml</option>
-	  			<option value="nips">nips</option>
-	  			<option value="uai">uai</option>
+	  			{{#tags}}
+				<option value="{{tag}}" {{selected}}>{{tag}}</option>
+				{{/tags}}
+	  			<!-- <option value="icml">icml</option> -->
+	  			<!-- <option value="nips">nips</option> -->
+	  			<!-- <option value="uai">uai</option> -->
             </select>
 	  	</p>
 	  </div>

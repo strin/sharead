@@ -16,8 +16,16 @@ $ ->
 						filehash: filehash
 						fileid: fileid
 						filename: activity.filename
-						thumb_path: activity.thumb_path 
+						thumb_path: activity.thumb_path
+						tags: store.miscInfo['all_tags'].map((tag) ->
+								return {
+									'tag': tag
+									'selected': if tag in activity.tags then 'selected' else ''
+								}
+							)
 					}
+					console.log('activity', activity)
+					console.log('view', view)
 					rendered = Mustache.render(template, view)
 					tpl = $(rendered)
 					tpl.appendTo(ul)
@@ -95,15 +103,20 @@ $ ->
 					hide_selected: true
 				})
 		)
+	
 
-	# fetch initial num activities.
-	client.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities)
-
-	# initialize search bar.
-	searchbar = $('.searchbar .chosen-select').searchbar({
-		skip_no_results: true,
-		hide_selected: true
-	})
+	# fetch db misc.
+	client.fetchMiscInfo ->
+		# fetch initial num activities.
+		client.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities)
+		# initialize search bar.
+		$('#searchbar_selector').html(store.miscInfo['all_tags'].map((tag) ->
+			return Mustache.render("<option value='{{tag}}'>{{tag}}</option>", {tag: tag})
+		).join('\r\n'))
+		searchbar = $('.searchbar .chosen-select').searchbar({
+			skip_no_results: true,
+			hide_selected: true
+		})
 
 	$('#searchbar_selector').change(() ->
 		# searchbar change event.

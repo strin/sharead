@@ -10,7 +10,8 @@ import shareread.storage.local as store
 from shareread.server.utils import (parse_webkitform, parse_filename,
                                     create_thumbnail, get_thumbnail)
 from shareread.server.db import (create_file_entry, update_file_entry, get_file_entry,
-                                 add_recent_entry, update_inverted_index, filter_by_inverted_index)
+                                 add_recent_entry, update_inverted_index, filter_by_inverted_index,
+                                 MiscInfo)
 from shareread.server.recents import (RECENTS_ADD, RECENTS_UPDATE, fetch_num_activities)
 
 def TemplateRenderHandler(template):
@@ -84,9 +85,15 @@ class FileMetaHandler(web.RequestHandler):
     def post(self):
         filehashes = json.loads(self.get_argument('filehashes'))
         meta_by_filehash = {filehash: get_file_entry(filehash) for filehash in filehashes}
-        print 'meta', meta_by_filehash
         self.write({
             'meta_by_filehash':meta_by_filehash
+        })
+
+class MiscInfoHandler(web.RequestHandler):
+    def get(self):
+        misc = MiscInfo()
+        self.write({
+            'all_tags': misc.all_tags
         })
 
 class RecentItemsHandler(web.RequestHandler):
@@ -131,6 +138,7 @@ handlers = [
     (r"/file/meta", FileMetaHandler),
     (r"/file/thumbnail/(.*)", FileThumbnailHandler),
     (r"/file/download/(.*)", FileDownloadHanlder),
+    (r"/db/misc", MiscInfoHandler),
     (r"/search", SearchHandler),
     (r"/upload", TemplateRenderHandler('upload.html')),
     (r"/recents", TemplateRenderHandler('recents.html')),

@@ -27,6 +27,13 @@ sharereadClient = {
 		)
 	,
 
+	fetchMiscInfo: (callback) ->
+		$.get('db/misc', (response) ->
+			console.log('misc', response)
+			sharereadStore.setMiscInfo(response)
+			callback()
+		)
+
 	searchFile: (tags, callback) ->
 		client = this
 		$.post('search', {
