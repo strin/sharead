@@ -99,6 +99,14 @@ def get_file_entry(filehash):
     ======
         filehash
     """
+    def decode_meta(row):
+        if not row:
+            return row
+        meta = dict(row)
+        if 'tags' in meta:
+            meta['tags'] = json.loads(meta['tags'])
+        return meta
+
     with DBConn() as conn:
         cursor = conn.cursor()
         cursor.execute("""
@@ -106,8 +114,7 @@ def get_file_entry(filehash):
                        """ % dict(filehash=filehash)
                        )
         row = cursor.fetchone()
-        if row:
-            return dict(row)
+        return decode_meta(row)
     return None
 
 def update_file_entry(filehash, **kwargs):
@@ -126,11 +133,11 @@ def update_file_entry(filehash, **kwargs):
         "upload_date"
         "thumb_path"
     ])
-    def process_meta(key, value):
+    def encode_meta(key, value):
         if key == "tags": # use json encoding.
             return json.dumps(value)
         return encode_db_string(value)
-    kwargs = {key: process_meta(key, value)
+    kwargs = {key: encode_meta(key, value)
               for (key, value) in kwargs.items() if key in whitelist}
     update_lang = ','.join(map(lambda key: key + "='%(" + key + ")s'",
                                kwargs.keys()))
@@ -140,7 +147,6 @@ def update_file_entry(filehash, **kwargs):
                     WHERE filehash='%(filehash)s'
                   """ % dict(update_lang=update_lang,
                              filehash=filehash)
-    print 'update_lang', update_lang
     with DBConn() as conn:
         cursor = conn.cursor()
         cursor.execute(update_lang % kwargs)

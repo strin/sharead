@@ -84,6 +84,7 @@ class FileMetaHandler(web.RequestHandler):
     def post(self):
         filehashes = json.loads(self.get_argument('filehashes'))
         meta_by_filehash = {filehash: get_file_entry(filehash) for filehash in filehashes}
+        print 'meta', meta_by_filehash
         self.write({
             'meta_by_filehash':meta_by_filehash
         })

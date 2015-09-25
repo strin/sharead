@@ -32,6 +32,7 @@ class AbstractChosen
     @display_selected_options = if @options.display_selected_options? then @options.display_selected_options else true
     @display_disabled_options = if @options.display_disabled_options? then @options.display_disabled_options else true
     @include_group_label_in_selected = @options.include_group_label_in_selected || false
+    @hide_selected = if @options.hide_selected? then @options.hide_selected else false
 
   set_default_text: ->
     if @form_field.getAttribute("data-placeholder")
@@ -85,6 +86,9 @@ class AbstractChosen
   result_add_option: (option) ->
     return '' unless option.search_match
     return '' unless this.include_option_in_results(option)
+
+    if @hide_selected and option.selected
+      return ''
 
     classes = []
     classes.push "active-result" if !option.disabled and !(option.selected and @is_multiple)

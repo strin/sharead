@@ -1,3 +1,9 @@
+cd chosen-1.4.2
+grunt build
+cd ..
+cd koenpunt-chosen-with-add
+grunt build
+cd ..
 cp -r koenpunt-chosen-with-add/public/chosen.css ../static/css/
 cp -r koenpunt-chosen-with-add/public/chosen.jquery.min.js ../static/js/
 cp -r chosen-1.4.2/public/chosen.css ../static/css/searchbar.css

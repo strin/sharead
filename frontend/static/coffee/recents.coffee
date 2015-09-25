@@ -92,6 +92,7 @@ $ ->
 				$('.recents-tag.chosen-select').chosen({
 					create_option: true,
 					skip_no_results: true
+					hide_selected: true
 				})
 		)
 
@@ -100,7 +101,8 @@ $ ->
 
 	# initialize search bar.
 	searchbar = $('.searchbar .chosen-select').searchbar({
-		skip_no_results: true
+		skip_no_results: true,
+		hide_selected: true
 	})
 
 	$('#searchbar_selector').change(() ->

@@ -146,6 +146,10 @@ li:hover {
   z-index: 100;
 }
 
+.chosen-container-multi .chosen-choices li.search-field input[type="text"] {
+  background-color: white !important;
+}
+
 /* searchbar */
 .searchbar {
   width: 100%;
