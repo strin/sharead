@@ -9,4 +9,5 @@ upload
 *.sqlite
 # cache
 cache
-
+# compiled coffee scripts
+frontend/static/coffee/*.js

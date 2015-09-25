@@ -27,11 +27,11 @@ $ ->
 						# get list of all tags.
 						chosen = tpl.find('.recents-tag').data('chosen')
 						dataChosen = _.filter(chosen.results_data, 
-							data ->
+							(data) ->
 								return data.selected
 						)
 						tagsChosen = _.map(dataChosen, 
-							data ->
+							(data) ->
 								return data.text
 						)
 						sharereadClient.updateFile(filehash, {
