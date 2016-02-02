@@ -4,6 +4,66 @@
 		"selected_items":
 		[
 			[
+				"toggle",
+				"toggleLink"
+			],
+			[
+				"pos",
+				"position"
+			],
+			[
+				"overflw",
+				"overflow-y: 〔property〕"
+			],
+			[
+				"rel",
+				"relative〔value〕"
+			],
+			[
+				"render",
+				"render_activities"
+			],
+			[
+				"fetch",
+				"fetchRecents〔function〕"
+			],
+			[
+				"shar",
+				"sharereadClient〔variable〕"
+			],
+			[
+				"share",
+				"sharereadStore〔variable〕"
+			],
+			[
+				"sharere",
+				"sharereadStore〔variable〕"
+			],
+			[
+				"fileh",
+				"filehashes〔argument〕"
+			],
+			[
+				"filehas",
+				"filehashes"
+			],
+			[
+				"activ",
+				"activities_by_filehash"
+			],
+			[
+				"merge",
+				"mergeFileActivities〔function〕"
+			],
+			[
+				"activi",
+				"activitiesByFilehash〔variable〕"
+			],
+			[
+				"file",
+				"filehashes〔variable〕"
+			],
+			[
 				"positio",
 				"positionElements〔function〕"
 			],
@@ -40,10 +100,6 @@
 				"activity"
 			],
 			[
-				"file",
-				"filename"
-			],
-			[
 				"fileha",
 				"filehashes"
 			]
@@ -51,16 +107,8 @@
 	},
 	"buffers":
 	[
-		{
-			"file": "template/recents.html",
-			"settings":
-			{
-				"buffer_size": 1608,
-				"line_ending": "Windows"
-			}
-		}
 	],
-	"build_system": "",
+	"build_system": "Packages/Better CoffeeScript/CoffeeScript.sublime-build",
 	"command_palette":
 	{
 		"height": 87.0,
@@ -69,6 +117,22 @@
 			[
 				"install",
 				"Package Control: Install Package"
+			],
+			[
+				"coffescript",
+				"Coffee: Run Script"
+			],
+			[
+				"better",
+				"Preferences: Better CoffeeScript Settings – Default"
+			],
+			[
+				"better ",
+				"Preferences: Better CoffeeScript Settings – User"
+			],
+			[
+				"coffeescrip",
+				"Set Syntax: CoffeeScript"
 			],
 			[
 				"insta",
@@ -87,7 +151,7 @@
 				"Preferences: Browse Packages"
 			]
 		],
-		"width": 593.0
+		"width": 485.0
 	},
 	"console":
 	{
@@ -104,16 +168,29 @@
 	},
 	"file_history":
 	[
+		"/Users/tianlins/Project/shareread/frontend/static/css/recents.css",
+		"/Users/tianlins/Project/shareread/frontend/static/css/searchbar.css",
+		"/Users/tianlins/Project/shareread/frontend/template/upload.html",
+		"/Users/tianlins/Project/shareread/frontend/static/js/store.js",
+		"/Users/tianlins/Project/shareread/frontend/static/coffee/store.coffee",
+		"/Users/tianlins/Project/shareread/frontend/static/coffee/client.coffee",
+		"/Users/tianlins/Project/shareread/frontend/static/coffee/recents.coffee",
+		"/Users/tianlins/Project/shareread/frontend/template/recents.html",
+		"/Users/tianlins/Project/shareread/frontend/static/mustache/recents-item.html",
+		"/Users/tianlins/Project/shareread/frontend/static/js/client.js",
+		"/Users/tianlins/Project/shareread/frontend/static/js/recents.js",
+		"/Users/tianlins/Project/shareread/frontend/static/js/upload.js",
+		"/Users/tianlins/Library/Application Support/Sublime Text 2/Packages/CoffeeCompile/CoffeeCompile.sublime-settings",
+		"/Users/tianlins/Project/shareread/frontend/static/coffee/upload.coffee",
+		"/Users/tianlins/Library/Application Support/Sublime Text 2/Packages/Better CoffeeScript/CoffeeScript.sublime-settings",
+		"/Users/tianlins/Library/Application Support/Sublime Text 2/Packages/User/CoffeeScript.sublime-settings",
+		"/Users/tianlins/Library/Application Support/Sublime Text 2/Packages/SublimeOnSaveBuild/SublimeOnSaveBuild.sublime-settings",
+		"/Users/tianlins/Project/shareread/frontend/static/mustache/uploaded-item.html",
+		"/Users/tianlins/Project/shareread/frontend/static/css/upload.css",
 		"/Users/tianlins/Dropbox/Garage/DeepRL/Arcade-Learning-Environment/README-SDL.txt",
 		"/Applications/mvim",
-		"/Users/tianlins/Project/shareread/frontend/static/js/recents.js",
-		"/Users/tianlins/Project/shareread/frontend/static/css/recents.css",
-		"/Users/tianlins/Project/shareread/frontend/static/mustache/recents-item.html",
-		"/Users/tianlins/Project/shareread/frontend/template/recents.html",
 		"/Users/tianlins/Dropbox/Stanford/tianlins-homepage/index.html",
-		"/Users/tianlins/Project/shareread/frontend/template/upload.html",
 		"/Users/tianlins/Library/Application Support/Sublime Text 2/Packages/Default/Preferences.sublime-settings",
-		"/Users/tianlins/Project/shareread/frontend/static/js/upload.js",
 		"/Users/tianlins/Project/shareread/frontend/static/js/script.js",
 		"/Users/tianlins/Project/shareread/README.md",
 		"/Users/tianlins/Dropbox/Garage/mini-upload-form/upload.php",
@@ -139,6 +216,20 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"recents-item-filename",
+			"search-field",
+			"data(",
+			"merge",
+			"hover",
+			"anchor",
+			"store",
+			"sharereadStore",
+			"activitiesByFilehash",
+			"activities_by_filehash",
+			"num_activities",
+			"NUM_ACTIVITIES_PER_FETCH",
+			"activities_by_filehash",
+			"thum",
 			"projects",
 			"Slide",
 			"cv_tianlin_shi_stanford_2015",
@@ -176,36 +267,8 @@
 	"groups":
 	[
 		{
-			"selected": 0,
 			"sheets":
 			[
-				{
-					"buffer": 0,
-					"file": "template/recents.html",
-					"settings":
-					{
-						"buffer_size": 1608,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				}
 			]
 		}
 	],
@@ -215,7 +278,7 @@
 	},
 	"input":
 	{
-		"height": 0.0
+		"height": 31.0
 	},
 	"layout":
 	{
@@ -240,6 +303,14 @@
 		]
 	},
 	"menu_visible": true,
+	"output.coffeecompile_output":
+	{
+		"height": 100.0
+	},
+	"output.exec":
+	{
+		"height": 100.0
+	},
 	"replace":
 	{
 		"height": 0.0
@@ -250,6 +321,14 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"upl",
+				"template/upload.html"
+			],
+			[
+				"recn",
+				"js/recents.js"
+			]
 		],
 		"width": 0.0
 	},

@@ -69,3 +69,6 @@ except ImportError as e:
     def create_thumbnail(filehash):
         return ''
 
+    def get_thumbnail(thumb_path):
+        return ''
+
