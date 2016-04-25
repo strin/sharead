@@ -1,4 +1,4 @@
-sharereadStore = {
+window.sharereadStore = {
 	activeFilehashes: [],
 	filehashes: [],
 	metaByFilehash: {},

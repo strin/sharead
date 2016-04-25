@@ -1,7 +1,7 @@
 $ ->
 	NUM_ACTIVITIES_PER_FETCH = 10
-	client = sharereadClient
-	store = sharereadStore
+	window.client = sharereadClient
+	window.store = sharereadStore
 	render_activities = -> 
 		$.get('mustache/recents-item.html',
 			(template) ->

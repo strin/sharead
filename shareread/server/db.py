@@ -46,24 +46,30 @@ class DBConn(object):
         self.conn.close()
 
 class MiscInfo(object):
-    @property
-    def all_tags(self):
+    def _fetch_row(self):
         with DBConn() as conn:
             cursor = conn.cursor()
             cursor.execute("""
                            SELECT * FROM info WHERE key='tags'
                            """)
             row = cursor.fetchone()
-            if row:
-                return json.loads(row['value'])
+            return row
+
+
+    @property
+    def all_tags(self):
+        row = self._fetch_row()
+        if row:
+            return json.loads(row['value'])
         return []
+
 
     @all_tags.setter
     def all_tags(self, tags):
         value = json.dumps(tags)
         with DBConn() as conn:
             cursor = conn.cursor()
-            if self.all_tags:
+            if self._fetch_row():
                 cursor.execute("""
                                UPDATE info
                                SET value=:value
@@ -216,8 +222,7 @@ def create_file_entry(filehash, filename, fileext = '',
     upload_date = encode_db_string(upload_date)
     thumb_path = encode_db_string(thumb_path)
     # merge into global tags.
-    if 'tags' in kwargs:
-        MiscInfo().merge_tags(kwargs['tags'])
+    MiscInfo().merge_tags(tags)
     tags = encode_db_string(json.dumps(tags))
 
     with DBConn() as conn:
