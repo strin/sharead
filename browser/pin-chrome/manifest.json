@@ -1,0 +1,16 @@
+{
+  "name": "Papertroll",
+  "description": "Save to papertroll",
+  "version": "0.1",
+  "permissions": [
+    "activeTab", "http://*/"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "browser_action": {
+    "default_title": "Save to papertroll"
+  },
+  "manifest_version": 2
+}
