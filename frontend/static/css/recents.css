@@ -29,7 +29,7 @@
   font: bold 15px Helvetica, Verdana, sans-serif;
   border: none;
   position: relative;
-  width: 350px;
+  width: 650px;
   outline: 0;
   background-color: transparent;
 }
@@ -58,14 +58,14 @@
 }
 
 div.container {
-  width: 500px;
+  width: 800px;
   margin-left: auto;
   margin-right: auto;
 }
  
 ul {
   list-style-type: none;
-  width: 500px;
+  width: 800px;
 }
  
  
@@ -92,7 +92,7 @@ li:hover {
 }
 
 .chosen-select {
-  width: 300px;
+  width: 700px;
 }
 
 .chosen-container-multi .chosen-choices {
