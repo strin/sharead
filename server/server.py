@@ -4,6 +4,7 @@ import base64
 import json
 from StringIO import StringIO
 from datetime import datetime
+import urllib2
 
 #import shareread.storage.dropbox as store
 import shareread.storage.local as store
@@ -20,6 +21,43 @@ def TemplateRenderHandler(template):
             self.render(template)
     return UploadHandler
 
+
+def create_file(filename, ext, data):
+    data_stream = StringIO(data)
+    # get filehash.
+    md5_code = md5.new()
+    md5_code.update(data)
+    filehash = base64.b64encode(md5_code.digest())
+    filehash = '.'.join([filehash, ext])
+    # save file to store.
+    store.put_file(store.TEST_ACCESS_TOKEN, filehash, data_stream)
+    # get upload date.
+    upload_date = str(datetime.now())
+    # create thumbnail.
+    thumb_path = create_thumbnail(filehash)
+    # update db.
+    create_file_entry(filehash, filename, ext, upload_date, thumb_path=thumb_path)
+    add_recent_entry(filehash, action_type=RECENTS_ADD)
+    return filehash
+
+
+class PinSubmitHandler(web.RequestHandler):
+    def post(self):
+        link = self.get_argument('link')
+        filename_full = link[link.rfind('/')+1:]
+        (filename, ext) = parse_filename(filename_full)
+        stream = urllib2.urlopen(link)
+        data = stream.read()
+        filehash = create_file(filename, ext, data)
+        print '[pin]', filename, ext, filehash
+        self.write({
+            'filehash':filehash,
+            'filename':filename,
+            'response':'OK'
+        })
+
+
+
 class UploadSubmitHandler(web.RequestHandler):
     def post(self):
         form = parse_webkitform(self.request.body)
@@ -31,20 +69,8 @@ class UploadSubmitHandler(web.RequestHandler):
             return
         # get data.
         data = form['data']
-        data_stream = StringIO(data)
-        # get filehash.
-        md5_code = md5.new()
-        md5_code.update(data)
-        filehash = base64.b64encode(md5_code.digest())
-        filehash = '.'.join([filehash, ext])
-        store.put_file(store.TEST_ACCESS_TOKEN, filehash, data_stream)
-        # get upload date.
-        upload_date = str(datetime.now())
-        # create thumbnail.
-        thumb_path = create_thumbnail(filehash)
-        # update db.
-        create_file_entry(filehash, filename, ext, upload_date, thumb_path=thumb_path)
-        add_recent_entry(filehash, action_type=RECENTS_ADD)
+        filehash = create_file(filename, ext, data)
+        print '[upload]', filename, ext, filehash
         self.write({
             'filehash':filehash,
             'filename':filename,
@@ -134,6 +160,7 @@ handlers = [
     (r"/fonts/(.*)", web.StaticFileHandler, {"path": "frontend/static/fonts/"}),
     (r"/mustache/(.*)", web.StaticFileHandler, {"path": "frontend/static/mustache/"}),
     (r"/upload-submit", UploadSubmitHandler),
+    (r"/pin-submit", PinSubmitHandler),
     (r"/file/update", FileUpdateHandler),
     (r"/file/meta", FileMetaHandler),
     (r"/file/thumbnail/(.*)", FileThumbnailHandler),
