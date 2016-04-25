@@ -52,7 +52,7 @@ try:
             file_stream = store.get_file(store.TEST_ACCESS_TOKEN, filehash)
             pdf_stream.write(file_stream.read())
         with Image(filename="cache/temp.pdf[0]") as image:
-            height_desired = 50
+            height_desired = 250
             width = int(height_desired * image.width / image.height)
             image.resize(width, height_desired)
             image.save(filename='cache/thumbnail.png')
