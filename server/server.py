@@ -5,6 +5,7 @@ import json
 from StringIO import StringIO
 from datetime import datetime
 import urllib2
+import os
 
 #import shareread.storage.dropbox as store
 import shareread.storage.local as store
@@ -181,7 +182,8 @@ settings = {
 
 if __name__ == "__main__":
     application = web.Application(handlers, **settings)
-    application.listen(5000, address="0.0.0.0")
+    port = int(os.environ.get("PORT", 5000))
+    application.listen(port, address="0.0.0.0")
     ioloop.IOLoop.current().start()
 
 
