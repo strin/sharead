@@ -3,7 +3,7 @@ var url = window.location.href;
 // if(url.indexOf('.pdf') == -1) {
 // 	console.log('papertroll: this is not a pdf!');
 // }
-$.post('http://54.149.190.97:8899/pin-submit', {
+$.post('http://sharead-org.herokuapp.com/pin-submit', {
 	'link': url
 }, function() {
 
