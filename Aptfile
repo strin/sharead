@@ -1,4 +1,5 @@
 libjpeg62
+libpng16-dev
 libc6
 libcairo2
 libfontforge1
