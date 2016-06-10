@@ -6,6 +6,7 @@ from datetime import datetime
 
 DB_FILE_NAME = 'shareread.sqlite'
 
+
 class DBConn(object):
     def __enter__(self):
         conn = sql.connect(DB_FILE_NAME)
@@ -44,6 +45,70 @@ class DBConn(object):
     def __exit__(self, type, value, traceback):
         self.conn.commit()
         self.conn.close()
+
+
+class KeyValueStore(object):
+    '''
+    a simple model template for key-value stores.
+    '''
+    def __init__(self, db_name, key_type='TEXT'):
+        '''
+        db_name: name of the key-value store database.
+        key_type: the type of primary key: TEXT, INTEGER, REAL, BLOB
+        the value_type will be BLOB.
+        '''
+        with DBConn() as conn:
+            db_name = 'kv_' + db_name
+            conn.execute('''
+                    CREATE TABLE IF NOT EXISTS %(db_name)s
+                    (k %(key_type)s PRIMARY KEY,
+                     v BLOB)
+                    ''' %
+                    dict(db_name=db_name, key_type=key_type))
+            self.db_name = db_name
+            self.key_type = key_type
+
+
+    def __getitem__(self, key):
+        '''
+        usage: store[key]
+        return the value corresponding to the key in DB.
+        '''
+        with DBConn() as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                    SELECT v FROM %(db_name)s WHERE k=:k
+                    ''' % dict(db_name=self.db_name),
+                    dict(k=key)
+                )
+            row = cursor.fetchone()
+            if row:
+                return row['v']
+
+
+    def __contains__(self, key):
+        return self[key] is not None
+
+
+    def __setitem__(self, key, value):
+        with DBConn() as conn:
+            cursor = conn.cursor()
+            if key in self:
+                cursor.execute('''
+                        UPDATE %(db_name)s
+                        SET v=:v
+                        WHERE k=:k
+                        ''' % dict(db_name=self.db_name),
+                        dict(k=key, v=value)
+                    )
+            else:
+                cursor.execute('''
+                        INSERT INTO %(db_name)s(k, v)
+                        VALUES (:k, :v)
+                        ''' % dict(db_name=self.db_name),
+                        dict(k=key, v=value)
+                    )
+
 
 class MiscInfo(object):
     def _fetch_row(self):

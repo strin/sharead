@@ -1,6 +1,10 @@
-from ..db import (update_inverted_index, DB_FILE_NAME, filter_by_inverted_index,
-                  MiscInfo)
+from ..db import (update_inverted_index, filter_by_inverted_index,
+                  MiscInfo, KeyValueStore)
+import shareread.server.db as db
 import os
+
+db.DB_FILE_NAME = 'shareread.test.sqlite'
+DB_FILE_NAME = db.DB_FILE_NAME
 
 def test_inverted_index():
     if os.path.exists(DB_FILE_NAME):
@@ -15,12 +19,25 @@ def test_inverted_index():
 def test_meta_info():
     if os.path.exists(DB_FILE_NAME):
         os.remove(DB_FILE_NAME)
+    print DB_FILE_NAME
     misc = MiscInfo()
+    print misc.all_tags
     assert not misc.all_tags
     tag_values = [u'icml', u'nips']
     misc.all_tags = tag_values
     assert misc.all_tags == tag_values
 
 
+def test_kv_store():
+    '''
+    test a key value store.
+    '''
+    if os.path.exists(DB_FILE_NAME):
+        os.remove(DB_FILE_NAME)
+    kv = KeyValueStore('test')
+    kv['x'] = 1
+    assert kv['x'] == 1
+    kv['x'] = 2
+    assert kv['x'] == 2
 
 
