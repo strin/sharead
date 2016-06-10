@@ -5,6 +5,8 @@ import base64
 kv_auth_google = lambda: KeyValueStore('auth_google') # token -> {'userid': 1, 'expired': false}
 kv_user_google = lambda: KeyValueStore('user_google') # google_user_id -> user_id
 kv_user = lambda: KeyValueStore('user') # user_id -> user meta data in dict.
+kv_cookie = lambda: KeyValueStore('cookie') # cookie_token -> user_id
+
 
 def authorize_google(access_token):
     '''
@@ -35,6 +37,7 @@ def create_user_from_google(googleid, name, email, access_token):
     kv_user_google()[googleid] = userid
     kv_auth_google()[access_token] = dict(userid=userid, expired=False)
     kv_user()[userid] = dict(
+            userid=userid,
             name=name,
             email=email,
             accounts=dict(
@@ -42,3 +45,12 @@ def create_user_from_google(googleid, name, email, access_token):
             )
         )
     return userid
+
+
+def user_by_cookie(cookie_token):
+    userid = kv_cookie()[cookie_token]
+    return kv_user()[userid]
+
+
+def update_user_cookie(cookie_token, userid):
+    kv_cookie()[cookie_token] = userid

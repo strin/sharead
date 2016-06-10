@@ -1,5 +1,6 @@
 from tornado import (ioloop, web)
 import md5
+import hashlib
 import base64
 import json
 from StringIO import StringIO
@@ -15,9 +16,11 @@ from shareread.server.db import (create_file_entry, update_file_entry, get_file_
                                  add_recent_entry, update_inverted_index, filter_by_inverted_index,
                                  MiscInfo)
 from shareread.server.recents import (RECENTS_ADD, RECENTS_UPDATE, fetch_num_activities)
+from shareread.server.user import (user_by_cookie, authorize_google, create_user_from_google, update_user_cookie)
 import shareread.document.pdf2html as pdf2html
 
-def TemplateRenderHandler(template):
+
+def wrap_template(template):
     class UploadHandler(web.RequestHandler):
         def get(self):
             self.render(template)
@@ -43,6 +46,69 @@ def create_file(filename, ext, data):
     create_file_entry(filehash, filename, ext, upload_date, thumb_path=thumb_path)
     add_recent_entry(filehash, action_type=RECENTS_ADD)
     return filehash
+
+
+def authorize(cookie_token):
+    return user_by_cookie[cookie_token]
+
+
+def make_cookie_token(service, access_token):
+    cookie_raw = service + access_token + datetime.now().isoformat()
+    cookie = hashlib.sha256(cookie_raw).hexdigest()
+    return cookie
+
+
+def wrap_auth(Handler):
+    '''
+    given a Handler class, wrap it with user authentication.
+    '''
+    class WrappedHandler(Handler):
+        def get(self, *args, **kwargs):
+            user = authorize(self.get_cookie('token'))
+            if not user:
+                self.redirect('/') # red
+            else:
+                self.user = user
+                return Handler.get(*args, **kwargs)
+
+
+        def post(self, *args, **kwargs):
+            user = authorize(self.get_cookie('token'))
+            if not user:
+                self.redirect('/') # red
+            else:
+                self.user = user
+                return Handler.post(*args, **kwargs)
+
+
+class AuthenticateHandler(web.RequestHandler):
+    def post(self):
+        service = self.get_argument('service')
+        access_token = self.get_argument('access_token')
+        name = self.get_argument('name')
+        email = self.get_argument('email')
+        cookie_token = make_cookie_token(service, access_token)
+        if service == 'google':
+            # first try login.
+            googleid = self.get_argument('googleid')
+            userid = authorize_google(access_token)
+            if not userid: # create an account if necessary.
+                userid = create_user_from_google(googleid=googleid,
+                        name=name,
+                        email=email,
+                        access_token=access_token)
+            update_user_cookie(cookie_token, userid)
+            self.set_cookie('token', cookie_token)
+            self.write({
+                'response': 'OK',
+                'cookie_token': cookie_token
+            })
+        else:
+            self.write({
+                'response': 'ERROR',
+                'message': 'unknown service'
+            })
+
 
 
 class PinSubmitHandler(web.RequestHandler):
@@ -191,11 +257,12 @@ handlers = [
     (r"/file/download/(.*)", FileDownloadHanlder),
     (r"/db/misc", MiscInfoHandler),
     (r"/search", SearchHandler),
-    (r"/upload", TemplateRenderHandler('upload.html')),
-    (r"/recents", TemplateRenderHandler('recents.html')),
+    (r"/upload", wrap_template('upload.html')),
+    (r"/recents", wrap_auth(wrap_template('recents.html'))),
     (r"/recents/fetch", RecentItemsHandler),
-    (r"/home", TemplateRenderHandler('recents.html')),
-    (r"/", TemplateRenderHandler('index.html'))
+    (r"/home", wrap_template('recents.html')),
+    (r"/auth", AuthenticateHandler),
+    (r"/", wrap_template('index.html'))
 ]
 
 settings = {
