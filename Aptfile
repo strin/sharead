@@ -1,7 +1,12 @@
-software-properties-common
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/fontforge-common_20160404-0ubuntu1~wily_all.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/fontforge-dbg_20160404-0ubuntu1~wily_amd64.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/fontforge-nox_20160404-0ubuntu1~wily_amd64.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/fontforge_20160404-0ubuntu1~wily_amd64.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/libfontforge-dev_20160404-0ubuntu1~wily_amd64.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/libfontforge1_20160404-0ubuntu1~wily_amd64.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/libgdraw4_20160404-0ubuntu1~wily_amd64.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/python-fontforge_20160404-0ubuntu1~wily_amd64.deb
 libc6
-libfontforge1
-libfontforge-dev
 libgcc1
 libjs-pdf
 http://launchpadlibrarian.net/233530614/libstdc++6_5.3.1-5ubuntu2_amd64.deb
