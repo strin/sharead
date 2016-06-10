@@ -1,4 +1,4 @@
-sharereadClient = {
+window.client = {
 	updateFile: (filehash, data) ->
 		data = $.extend(data, {
 			filehash: filehash
@@ -12,15 +12,15 @@ sharereadClient = {
 		$.post('file/meta', {
 			filehashes: JSON.stringify(filehashes),
 		}, (response) ->
-			sharereadStore.mergeFileMeta(response.meta_by_filehash)
+			store.mergeFileMeta(response.meta_by_filehash)
 			callback(response)
 		)
 	,
 
 	fetchRecentFilehashes: (num_activities, callback) ->
 		$.get('recents/fetch', (response) ->
-			sharereadStore.mergeFileHashes(response.filehashes)
-			sharereadStore.setActiveFilehashes(response.filehashes)
+			store.mergeFileHashes(response.filehashes)
+			store.setActiveFilehashes(response.filehashes)
 			# filehashes = filehashes.concat(data.filehashes)
 			# activities_by_filehash = $.extend(activities_by_filehash, data.activities_by_filehash);
 			callback(response)
@@ -30,9 +30,10 @@ sharereadClient = {
 	fetchMiscInfo: (callback) ->
 		$.get('db/misc', (response) ->
 			console.log('misc', response)
-			sharereadStore.setMiscInfo(response)
+			store.setMiscInfo(response)
 			callback()
 		)
+	,
 
 	searchFile: (tags, callback) ->
 		client = this
@@ -40,13 +41,20 @@ sharereadClient = {
 			tags: JSON.stringify(tags),
 			keywords: JSON.stringify("")
 		}, (response) ->
-			sharereadStore.setActiveFilehashes(response.filehashes)
+			store.setActiveFilehashes(response.filehashes)
 			# fetch relavant meta data.
 			client.fetchFileMeta(response.filehashes, (response) ->
 				callback()
 			)
 		)
 	,
+
+	fetchHTMLView: (filehash, callback) ->
+		client = this
+		$.get('/file/html/' + filehash, {}, (response) ->
+			callback(response);
+		)
+
 
 	fetchRecents: (num_activities, callback) ->
 		client = this;

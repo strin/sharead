@@ -5,8 +5,6 @@
   $(function() {
     var NUM_ACTIVITIES_PER_FETCH, render_activities;
     NUM_ACTIVITIES_PER_FETCH = 10;
-    window.client = sharereadClient;
-    window.store = sharereadStore;
     render_activities = function() {
       return $.get('mustache/recents-item.html', function(template) {
         var activity, filehash, fileid, i, len, ref, rendered, toggleLink, tpl, ul, view;

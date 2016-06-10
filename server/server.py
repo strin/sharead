@@ -81,6 +81,7 @@ class UploadSubmitHandler(web.RequestHandler):
             'response':'OK'
         })
 
+
 class FileDownloadHanlder(web.RequestHandler):
     def get(self, filehash):
         data = store.get_file(store.TEST_ACCESS_TOKEN, filehash).read()
@@ -88,12 +89,20 @@ class FileDownloadHanlder(web.RequestHandler):
         self.write(data)
 
 
-class FileViewHanlder(web.RequestHandler):
+class FileHTMLHandler(web.RequestHandler):
     def get(self, filehash):
         html_path = pdf2html.get_rendered_path(filehash)
         with open(html_path, 'r') as f:
             self.set_header('Content-Type', 'text/html')
             self.write(f.read())
+
+
+class FileViewHandler(web.RequestHandler):
+    def get(self, filehash):
+        file_entry = get_file_entry(filehash)
+        return self.render('view.html', 
+                filehash=filehash,
+                meta=file_entry)
 
 
 class FileUpdateHandler(web.RequestHandler):
@@ -174,7 +183,8 @@ handlers = [
     (r"/mustache/(.*)", web.StaticFileHandler, {"path": "frontend/static/mustache/"}),
     (r"/upload-submit", UploadSubmitHandler),
     (r"/pin-submit", PinSubmitHandler),
-    (r"/view/(.*)", FileViewHanlder),
+    (r"/file/html/(.*)", FileHTMLHandler),
+    (r"/v/(.*)", FileViewHandler),
     (r"/file/update", FileUpdateHandler),
     (r"/file/meta", FileMetaHandler),
     (r"/file/thumbnail/(.*)", FileThumbnailHandler),
