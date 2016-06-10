@@ -121,11 +121,15 @@ class LogoutHandler(web.RequestHandler):
     ''' AJAX logout handler'''
     def post(self):
         cookie_token = self.get_cookie('token')
+        print 'delete cookie', cookie_token
         if cookie_token:
             remove_cookie(cookie_token)
         self.write({
             'response': 'OK'
         })
+
+    def get(self):
+        return self.post()
 
 
 
@@ -280,6 +284,7 @@ handlers = [
     (r"/recents/fetch", RecentItemsHandler),
     (r"/home", wrap_auth(wrap_template('recents.html'))),
     (r"/auth", AuthenticateHandler),
+    (r"/logout", LogoutHandler),
     (r"/", wrap_template('index.html'))
 ]
 

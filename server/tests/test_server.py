@@ -6,9 +6,22 @@ import shareread.server.user as user
 import os
 import json
 import urllib
+import mock
 
 db.DB_FILE_NAME = 'shareread.test.sqlite'
 application = web.Application(server.handlers, **server.settings)
+
+# tornado test client does not support cookie.
+# we need to create a mock.
+cookie = {}
+def set_cookie(obj, k, v):
+    cookie[k] = v
+
+def get_cookie(obj, k):
+    return cookie[k]
+
+web.RequestHandler.set_cookie = set_cookie
+web.RequestHandler.get_cookie = get_cookie
 
 
 class TestHandlerBase(AsyncHTTPTestCase):
@@ -57,6 +70,7 @@ class TestHomeViewHandler(TestHandlerBase):
         response = self.fetch('/home', follow_redirects=False)
         self.assertEqual(response.code, 302) # redirect.
         # authorize and try again.
+
         args = dict(
             access_token='xxxxx',
             googleid='1',
@@ -68,9 +82,14 @@ class TestHomeViewHandler(TestHandlerBase):
         self.fetch('/auth?' + encoded, method='POST',
                 body=json.dumps({}),
                 follow_redirects=False)
+
         response = self.fetch('/home', method='GET', follow_redirects=False)
         self.assertEqual(response.code, 200) # redirect.
         # logout and try again.
+        response = self.fetch('/logout', method='GET')
+        print response
+        response = self.fetch('/home', method='GET', follow_redirects=False)
+        self.assertEqual(response.code, 302) # redirect.
 
 
 
