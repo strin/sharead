@@ -3,10 +3,10 @@
   var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   $(function() {
-    var NUM_ACTIVITIES_PER_FETCH, client, render_activities, store;
+    var NUM_ACTIVITIES_PER_FETCH, render_activities;
     NUM_ACTIVITIES_PER_FETCH = 10;
-    client = window.sharereadClient;
-    store = sharereadStore;
+    window.client = sharereadClient;
+    window.store = sharereadStore;
     render_activities = function() {
       return $.get('mustache/recents-item.html', function(template) {
         var activity, filehash, fileid, i, len, ref, rendered, toggleLink, tpl, ul, view;
