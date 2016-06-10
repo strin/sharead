@@ -194,7 +194,8 @@ handlers = [
     (r"/upload", TemplateRenderHandler('upload.html')),
     (r"/recents", TemplateRenderHandler('recents.html')),
     (r"/recents/fetch", RecentItemsHandler),
-    (r"/", TemplateRenderHandler('recents.html'))
+    (r"/home", TemplateRenderHandler('recents.html')),
+    (r"/", TemplateRenderHandler('index.html'))
 ]
 
 settings = {
