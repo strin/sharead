@@ -1,5 +1,5 @@
 libjpeg62
-libpng16-dev
+http://ftp.us.debian.org/debian/pool/main/libp/libpng1.6/libpng16-16_1.6.21-5_amd64.deb
 libc6
 libcairo2
 libfontforge1
