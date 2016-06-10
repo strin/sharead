@@ -2,9 +2,8 @@ libc6
 libfontforge1
 libgcc1
 libjs-pdf
-http://mirrors.kernel.org/ubuntu/pool/main/g/gcc-5/libstdc++6_5.3.1-5ubuntu2_amd64.deb
-http://mirrors.kernel.org/ubuntu/pool/main/p/poppler/libpoppler57_0.38.0-0ubuntu1_amd64.deb
+http://launchpadlibrarian.net/233530614/libstdc++6_5.3.1-5ubuntu2_amd64.deb
+http://ftp.us.debian.org/debian/pool/main/p/poppler/libpoppler57_0.38.0-3_amd64.deb
 https://launchpad.net/~coolwanglu/+archive/ubuntu/pdf2htmlex/+files/pdf2htmlex_0.12-1~git201411121058r1a6ec-0ubuntu1~trusty1_amd64.deb
 ttfautohint
-https://launchpad.net/~coolwanglu/+archive/ubuntu/pdf2htmlex/+files/pdf2htmlex_0.12-1~git201411121058r1a6ec-0ubuntu1~trusty1_amd64.deb
 
