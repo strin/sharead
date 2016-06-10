@@ -29,7 +29,7 @@ def create_file(filename, ext, data):
     # get filehash.
     md5_code = md5.new()
     md5_code.update(data)
-    filehash = base64.b32encode(md5_code.digest())
+    filehash = base64.urlsafe_b64encode(md5_code.digest())
     filehash = '.'.join([filehash, ext])
     # save file to store.
     store.put_file(store.TEST_ACCESS_TOKEN, filehash, data_stream)
