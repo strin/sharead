@@ -1,11 +1,3 @@
-https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/fontforge-common_20160404-0ubuntu1~wily_all.deb
-https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/fontforge-dbg_20160404-0ubuntu1~wily_amd64.deb
-https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/fontforge-nox_20160404-0ubuntu1~wily_amd64.deb
-https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/fontforge_20160404-0ubuntu1~wily_amd64.deb
-https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/libfontforge-dev_20160404-0ubuntu1~wily_amd64.deb
-https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/libfontforge1_20160404-0ubuntu1~wily_amd64.deb
-https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/libgdraw4_20160404-0ubuntu1~wily_amd64.deb
-https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538554/+files/python-fontforge_20160404-0ubuntu1~wily_amd64.deb
 libc6
 libgcc1
 libjs-pdf
@@ -13,4 +5,5 @@ http://launchpadlibrarian.net/233530614/libstdc++6_5.3.1-5ubuntu2_amd64.deb
 http://security.ubuntu.com/ubuntu/pool/main/p/poppler/libpoppler44_0.24.5-2ubuntu4.4_amd64.deb
 https://launchpad.net/~coolwanglu/+archive/ubuntu/pdf2htmlex/+files/pdf2htmlex_0.12-1~git201411121058r1a6ec-0ubuntu1~trusty1_amd64.deb
 ttfautohint
+libcairo2-dev
 
