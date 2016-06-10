@@ -111,6 +111,20 @@ class KeyValueStore(object):
                     )
 
 
+    def remove(self, key):
+        if key not in self:
+            return
+        with DBConn() as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                    DELETE FROM %(db_name)s
+                    WHERE k=:k
+                ''' % dict(db_name=self.db_name),
+                dict(k=key)
+            )
+
+
+
 class MiscInfo(object):
     def _fetch_row(self):
         with DBConn() as conn:

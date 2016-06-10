@@ -35,5 +35,8 @@ def test_kv_store():
     assert kv['x'] == 1
     kv['x'] = 2
     assert kv['x'] == 2
+    kv.remove('x')
+    kv.remove('x')
+    assert 'x' not in kv
 
 
