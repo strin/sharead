@@ -54,3 +54,7 @@ def user_by_cookie(cookie_token):
 
 def update_user_cookie(cookie_token, userid):
     kv_cookie()[cookie_token] = userid
+
+
+def remove_cookie(cookie_token):
+    kv_cookie().remove(cookie_token)

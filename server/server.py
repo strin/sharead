@@ -16,7 +16,7 @@ from shareread.server.db import (create_file_entry, update_file_entry, get_file_
                                  add_recent_entry, update_inverted_index, filter_by_inverted_index,
                                  MiscInfo)
 from shareread.server.recents import (RECENTS_ADD, RECENTS_UPDATE, fetch_num_activities)
-from shareread.server.user import (user_by_cookie, authorize_google, create_user_from_google, update_user_cookie)
+from shareread.server.user import (user_by_cookie, authorize_google, create_user_from_google, update_user_cookie, remove_cookie)
 import shareread.document.pdf2html as pdf2html
 
 
@@ -49,7 +49,7 @@ def create_file(filename, ext, data):
 
 
 def authorize(cookie_token):
-    return user_by_cookie[cookie_token]
+    return user_by_cookie(cookie_token)
 
 
 def make_cookie_token(service, access_token):
@@ -64,24 +64,31 @@ def wrap_auth(Handler):
     '''
     class WrappedHandler(Handler):
         def get(self, *args, **kwargs):
-            user = authorize(self.get_cookie('token'))
+            cookie_token = self.get_cookie('token')
+            user = authorize(cookie_token)
             if not user:
                 self.redirect('/') # red
+                return
             else:
+                print '[authorized] cookie = ', cookie_token
                 self.user = user
-                return Handler.get(*args, **kwargs)
+                return Handler.get(self, *args, **kwargs)
 
 
         def post(self, *args, **kwargs):
-            user = authorize(self.get_cookie('token'))
+            cookie_token = self.get_cookie('token')
+            user = authorize(cookie_token)
             if not user:
                 self.redirect('/') # red
+                return
             else:
                 self.user = user
-                return Handler.post(*args, **kwargs)
+                return Handler.post(self, *args, **kwargs)
+    return WrappedHandler
 
 
 class AuthenticateHandler(web.RequestHandler):
+    ''' AJAX authentication handler'''
     def post(self):
         service = self.get_argument('service')
         access_token = self.get_argument('access_token')
@@ -108,6 +115,17 @@ class AuthenticateHandler(web.RequestHandler):
                 'response': 'ERROR',
                 'message': 'unknown service'
             })
+
+
+class LogoutHandler(web.RequestHandler):
+    ''' AJAX logout handler'''
+    def post(self):
+        cookie_token = self.get_cookie('token')
+        if cookie_token:
+            remove_cookie(cookie_token)
+        self.write({
+            'response': 'OK'
+        })
 
 
 
@@ -260,7 +278,7 @@ handlers = [
     (r"/upload", wrap_template('upload.html')),
     (r"/recents", wrap_auth(wrap_template('recents.html'))),
     (r"/recents/fetch", RecentItemsHandler),
-    (r"/home", wrap_template('recents.html')),
+    (r"/home", wrap_auth(wrap_template('recents.html'))),
     (r"/auth", AuthenticateHandler),
     (r"/", wrap_template('index.html'))
 ]

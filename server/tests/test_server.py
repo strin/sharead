@@ -49,4 +49,28 @@ class TestHomeViewHandler(TestHandlerBase):
             self.assertEqual(u[key], args[key])
 
 
+    def test_home(self):
+        '''
+        test recents page with authentication wrapper.
+        '''
+        # without authentication.
+        response = self.fetch('/home', follow_redirects=False)
+        self.assertEqual(response.code, 302) # redirect.
+        # authorize and try again.
+        args = dict(
+            access_token='xxxxx',
+            googleid='1',
+            service='google',
+            name='Tim',
+            email='tim@sharead.org'
+        )
+        encoded = urllib.urlencode(args)
+        self.fetch('/auth?' + encoded, method='POST',
+                body=json.dumps({}),
+                follow_redirects=False)
+        response = self.fetch('/home', method='GET', follow_redirects=False)
+        self.assertEqual(response.code, 200) # redirect.
+        # logout and try again.
+
+
 

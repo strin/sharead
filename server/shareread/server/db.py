@@ -74,7 +74,6 @@ class KeyValueStore(object):
         usage: store[key]
         return the value corresponding to the key in DB.
         '''
-        print '[self db_name]', self.db_name
         with DBConn() as conn:
             cursor = conn.cursor()
             cursor.execute('''
