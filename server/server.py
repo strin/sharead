@@ -15,6 +15,7 @@ from shareread.server.db import (create_file_entry, update_file_entry, get_file_
                                  add_recent_entry, update_inverted_index, filter_by_inverted_index,
                                  MiscInfo)
 from shareread.server.recents import (RECENTS_ADD, RECENTS_UPDATE, fetch_num_activities)
+import shareread.document.pdf2html as pdf2html
 
 def TemplateRenderHandler(template):
     class UploadHandler(web.RequestHandler):
@@ -28,10 +29,12 @@ def create_file(filename, ext, data):
     # get filehash.
     md5_code = md5.new()
     md5_code.update(data)
-    filehash = base64.b64encode(md5_code.digest())
+    filehash = base64.b32encode(md5_code.digest())
     filehash = '.'.join([filehash, ext])
     # save file to store.
     store.put_file(store.TEST_ACCESS_TOKEN, filehash, data_stream)
+    # create html view.
+    pdf2html.render_html_from_pdf(filehash)
     # get upload date.
     upload_date = str(datetime.now())
     # create thumbnail.
@@ -83,6 +86,15 @@ class FileDownloadHanlder(web.RequestHandler):
         data = store.get_file(store.TEST_ACCESS_TOKEN, filehash).read()
         self.set_header('Content-Type', 'application/pdf')
         self.write(data)
+
+
+class FileViewHanlder(web.RequestHandler):
+    def get(self, filehash):
+        html_path = pdf2html.get_rendered_path(filehash)
+        with open(html_path, 'r') as f:
+            self.set_header('Content-Type', 'text/html')
+            self.write(f.read())
+
 
 class FileUpdateHandler(web.RequestHandler):
     def post(self):
@@ -162,6 +174,7 @@ handlers = [
     (r"/mustache/(.*)", web.StaticFileHandler, {"path": "frontend/static/mustache/"}),
     (r"/upload-submit", UploadSubmitHandler),
     (r"/pin-submit", PinSubmitHandler),
+    (r"/view/(.*)", FileViewHanlder),
     (r"/file/update", FileUpdateHandler),
     (r"/file/meta", FileMetaHandler),
     (r"/file/thumbnail/(.*)", FileThumbnailHandler),
