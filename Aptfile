@@ -1,3 +1,10 @@
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538548/+files/fontforge-dbg_20160404-0ubuntu1~precise_amd64.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538548/+files/fontforge-nox_20160404-0ubuntu1~precise_amd64.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538548/+files/fontforge_20160404-0ubuntu1~precise_amd64.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538548/+files/libfontforge-dev_20160404-0ubuntu1~precise_amd64.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538548/+files/libfontforge1_20160404-0ubuntu1~precise_amd64.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538548/+files/libgdraw4_20160404-0ubuntu1~precise_amd64.deb
+https://launchpad.net/~fontforge/+archive/ubuntu/fontforge/+build/9538548/+files/python-fontforge_20160404-0ubuntu1~precise_amd64.deb
 libc6
 libgcc1
 libjs-pdf
