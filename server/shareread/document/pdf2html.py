@@ -1,9 +1,9 @@
 # convert pdf to html for efficient rendering.
 import shareread.storage.local as store
-from os import system, path
+from os import system, path, environ
 
-if 'PDF2HTML' in os.environ:
-    PDF2HTML = os.environ.get('PDF2HTML')
+if 'PDF2HTML' in environ:
+    PDF2HTML = environ.get('PDF2HTML')
 else:
     PDF2HTML = 'pdf2htmlEX' # pdf2html binary path.
 RENDER_ROOT = 'rendered'
