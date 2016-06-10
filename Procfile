@@ -1,1 +1,1 @@
-web: cd server; python server.py
+web: wget https://github.com/mozilla/pdf.js/releases/download/v1.4.20/pdfjs-1.4.20-dist.zip; unzip pdfjs-1.4.20-dist.zip; mv web pdf.js; cp -r pdf.js /app/.apt/usr/share/; alias pdf2htmlEX='pdf2htmlEX --data-dir /app/.apt/usr/share/pdf2htmlEX'; cd server; python server.py
