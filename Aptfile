@@ -7,7 +7,7 @@ libfontforge1
 libfreetype6
 libgcc1
 http://launchpadlibrarian.net/233530614/libstdc++6_5.3.1-5ubuntu2_amd64.deb
-http://security.ubuntu.com/ubuntu/pool/main/p/poppler/libpoppler44_0.24.5-2ubuntu4.4_amd64.deb
+http://ftp.us.debian.org/debian/pool/main/p/poppler/libpoppler57_0.38.0-3_amd64.deb
 ttfautohint
 http://ftp.gnome.org/mirror/cdimage/snapshot/20050323/Debian/pool/main/p/pdf2htmlex/pdf2htmlex_0.14.6+ds-2_amd64.deb
 
