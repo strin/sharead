@@ -1,5 +1,6 @@
 libc6
 libfontforge1
+libfontforge-dev
 libgcc1
 libjs-pdf
 http://launchpadlibrarian.net/233530614/libstdc++6_5.3.1-5ubuntu2_amd64.deb
