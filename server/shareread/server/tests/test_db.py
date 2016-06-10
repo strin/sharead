@@ -1,10 +1,6 @@
 from ..db import (update_inverted_index, filter_by_inverted_index,
-                  MiscInfo, KeyValueStore)
-import shareread.server.db as db
+                  MiscInfo, KeyValueStore, DB_FILE_NAME)
 import os
-
-db.DB_FILE_NAME = 'shareread.test.sqlite'
-DB_FILE_NAME = db.DB_FILE_NAME
 
 def test_inverted_index():
     if os.path.exists(DB_FILE_NAME):

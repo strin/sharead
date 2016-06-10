@@ -74,6 +74,7 @@ class KeyValueStore(object):
         usage: store[key]
         return the value corresponding to the key in DB.
         '''
+        print '[self db_name]', self.db_name
         with DBConn() as conn:
             cursor = conn.cursor()
             cursor.execute('''
@@ -83,7 +84,7 @@ class KeyValueStore(object):
                 )
             row = cursor.fetchone()
             if row:
-                return row['v']
+                return json.loads(row['v'])
 
 
     def __contains__(self, key):
@@ -99,14 +100,14 @@ class KeyValueStore(object):
                         SET v=:v
                         WHERE k=:k
                         ''' % dict(db_name=self.db_name),
-                        dict(k=key, v=value)
+                        dict(k=key, v=json.dumps(value))
                     )
             else:
                 cursor.execute('''
                         INSERT INTO %(db_name)s(k, v)
                         VALUES (:k, :v)
                         ''' % dict(db_name=self.db_name),
-                        dict(k=key, v=value)
+                        dict(k=key, v=json.dumps(value))
                     )
 
 
