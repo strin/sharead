@@ -124,7 +124,7 @@ def add_recent_entry(filehash, action_type, action_date = None):
     if not action_date:
         action_date = str(datetime.now())
     rowid = conn().zcount('recents', -float('inf'), float('inf'))
-    conn().zadd('recents', rowid, dumps(dict(
+    conn().zadd('recents', float(rowid), dumps(dict(
             filehash=filehash,
             action_date=action_date,
             action_type=action_type
