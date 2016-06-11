@@ -2,15 +2,12 @@
 import sys
 import os
 from datetime import datetime
+from shareread.utils import mkdir_if_necessary
 
 TEST_ACCESS_TOKEN = 'strin'
 
 def _get_access_token():
     return str(datetime.now())
-
-def mkdir_if_necessary(dirpath):
-    if not os.path.exists(dirpath):
-        os.makedirs(dirpath)
 
 def get_local_path(access_token, path):
     return os.path.join('upload', access_token, path)

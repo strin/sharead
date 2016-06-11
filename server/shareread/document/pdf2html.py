@@ -1,5 +1,6 @@
 # convert pdf to html for efficient rendering.
 import shareread.storage.local as store
+from shareread.utils import mkdir_if_necessary
 from os import system, path, environ
 
 if 'PDF2HTML' in environ:
@@ -12,7 +13,7 @@ def get_rendered_path(filehash):
     '''
     given document filehash, determine the path to rendered html
     '''
-    store.mkdir_if_necessary(RENDER_ROOT)
+    mkdir_if_necessary(RENDER_ROOT)
     return path.join(RENDER_ROOT, filehash)
 
 
