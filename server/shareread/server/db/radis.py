@@ -9,7 +9,7 @@ def conn():
     global _redis_store
     if not _redis_store: # establish a new connection.
         if 'REDIS_URL' in environ:
-            _redis_store = redis.from_url(environ.get('REDIS_URL'))
+            _redis_store = redis.StrictRedis.from_url(environ.get('REDIS_URL'))
         else:
             _redis_store = redis.StrictRedis(host='localhost', port=6379, db=0)
     return _redis_store
@@ -124,11 +124,7 @@ def add_recent_entry(filehash, action_type, action_date = None):
     if not action_date:
         action_date = str(datetime.now())
     rowid = conn().zcount('recents', -float('inf'), float('inf'))
-    import sys
-    print>>sys.stderr, 'rowid', rowid
-    if not rowid:
-        rowid = 0
-    conn().zadd('recents', float(rowid), dumps(dict(
+    conn().zadd('recents', rowid, dumps(dict(
             filehash=filehash,
             action_date=action_date,
             action_type=action_type
