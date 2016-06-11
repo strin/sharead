@@ -106,7 +106,8 @@ class AuthenticateHandler(web.RequestHandler):
         if service == 'google':
             # first try login.
             googleid = self.get_argument('googleid')
-            image_url = self.get_argument('image_url')
+            image_url = self.get_argument('image_url',
+                    default='/img/default-profile.jpg')
             userid = authorize_google(access_token)
             if not userid: # create an account if necessary.
                 userid = create_user_from_google(googleid=googleid,
