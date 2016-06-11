@@ -8,8 +8,9 @@ import json
 import urllib
 import mock
 
-db.DB_FILE_NAME = 'shareread.test.sqlite'
 application = web.Application(server.handlers, **server.settings)
+
+db.set_testing_mode()
 
 # tornado test client does not support cookie.
 # we need to create a mock.
@@ -27,8 +28,6 @@ web.RequestHandler.get_cookie = get_cookie
 class TestHandlerBase(AsyncHTTPTestCase):
     def setUp(self):
         # clear db first.
-        if os.path.exists(db.DB_FILE_NAME):
-            os.remove(db.DB_FILE_NAME)
         super(TestHandlerBase, self).setUp()
 
     def get_app(self):
@@ -37,11 +36,13 @@ class TestHandlerBase(AsyncHTTPTestCase):
 
 class TestHomeViewHandler(TestHandlerBase):
     def test_load(self):
+        db.flush_db()
         response = self.fetch('/', method='GET', follow_redirects=False)
         self.assertEqual(response.code, 200)
 
 
     def test_auth(self):
+        db.flush_db()
         args = dict(
             access_token='xxxxx',
             googleid='1',
@@ -66,6 +67,7 @@ class TestHomeViewHandler(TestHandlerBase):
         '''
         test recents page with authentication wrapper.
         '''
+        db.flush_db()
         # without authentication.
         response = self.fetch('/home', follow_redirects=False)
         self.assertEqual(response.code, 302) # redirect.

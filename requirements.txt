@@ -1,3 +1,5 @@
 tornado==4.3
 dropbox
 wand
+redis
+fakeredis

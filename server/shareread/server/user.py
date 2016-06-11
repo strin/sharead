@@ -50,7 +50,8 @@ def create_user_from_google(googleid, name, email, access_token, meta={}):
 
 def user_by_cookie(cookie_token):
     userid = kv_cookie()[cookie_token]
-    return kv_user()[userid]
+    if userid:
+        return kv_user()[userid]
 
 
 def update_user_cookie(cookie_token, userid):

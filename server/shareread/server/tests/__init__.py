@@ -1,2 +1,2 @@
 import shareread.server.db as db
-db.DB_FILE_NAME = 'shareread.test.sqlite'
+db.set_testing_mode()

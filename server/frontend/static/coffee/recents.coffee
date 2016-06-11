@@ -40,7 +40,7 @@ $ ->
 							(data) ->
 								return data.text
 						)
-						sharereadClient.updateFile(filehash, {
+						client.updateFile(filehash, {
 							tags: tagsChosen
 						})
 					).bind(this, tpl, filehash))
@@ -127,7 +127,7 @@ $ ->
 		)
 
 		if(tagsChosen.length > 0) # do filter.
-			sharereadClient.searchFile(tagsChosen, render_activities)
+			client.searchFile(tagsChosen, render_activities)
 		else
-			sharereadClient.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities)
+			client.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities)
 	)

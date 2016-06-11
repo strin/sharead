@@ -2,10 +2,20 @@
 import sqlite3 as sql
 import base64
 import json
+import os
 from datetime import datetime
 
 DB_FILE_NAME = 'shareread.sqlite'
 
+
+def set_testing_mode():
+    global DB_FILE_NAME
+    DB_FILE_NAME = 'shareread.test.sqlite'
+
+
+def flush_db():
+    if os.path.exists(db.DB_FILE_NAME):
+        os.remove(db.DB_FILE_NAME)
 
 class DBConn(object):
     def __enter__(self):

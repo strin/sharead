@@ -41,7 +41,7 @@
             tagsChosen = _.map(dataChosen, function(data) {
               return data.text;
             });
-            return sharereadClient.updateFile(filehash, {
+            return client.updateFile(filehash, {
               tags: tagsChosen
             });
           }).bind(this, tpl, filehash));
@@ -117,9 +117,9 @@
         return data.text;
       });
       if (tagsChosen.length > 0) {
-        return sharereadClient.searchFile(tagsChosen, render_activities);
+        return client.searchFile(tagsChosen, render_activities);
       } else {
-        return sharereadClient.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities);
+        return client.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities);
       }
     });
   });
