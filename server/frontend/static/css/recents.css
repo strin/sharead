@@ -58,6 +58,7 @@
 }
 
 div.container {
+  margin-top: 80px;
   width: 800px;
   margin-left: auto;
   margin-right: auto;

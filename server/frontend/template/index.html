@@ -24,13 +24,14 @@
 		  var access_token = googleUser.getAuthResponse().id_token;
 		  var name = profile.getName();
 		  var email = profile.getEmail();
+		  var image_url = profile.getImageUrl();
 		  console.log('ID: ' + googleid); // Do not send to your backend! Use an ID token instead.
 		  console.log('Token: ' + access_token);
 		  console.log('Name: ' + name);
-		  console.log('Image URL: ' + profile.getImageUrl());
+		  console.log('Image URL: ' + image_url);
 		  console.log('Email: ' + email);
-		  user.authorize_google(googleid, name, email, access_token);
-		  // window.location.href = 'home'
+		  user.authorize_google(googleid, name, email, access_token, image_url);
+		  window.location.href = 'home'
 		}
 		</script>
 		<script src="coffee/user.js"></script>

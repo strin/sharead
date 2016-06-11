@@ -23,7 +23,15 @@ import shareread.document.pdf2html as pdf2html
 def wrap_template(template):
     class UploadHandler(web.RequestHandler):
         def get(self):
-            self.render(template)
+            if 'user' in self.__dict__: # with authentication.
+                user = dict(
+                    name=self.user.get('name'),
+                    email=self.user.get('email'),
+                    meta=self.user.get('meta')
+                )
+                self.render(template, user=user)
+            else:
+                self.render(template)
     return UploadHandler
 
 
@@ -98,12 +106,17 @@ class AuthenticateHandler(web.RequestHandler):
         if service == 'google':
             # first try login.
             googleid = self.get_argument('googleid')
+            image_url = self.get_argument('image_url')
             userid = authorize_google(access_token)
             if not userid: # create an account if necessary.
                 userid = create_user_from_google(googleid=googleid,
                         name=name,
                         email=email,
-                        access_token=access_token)
+                        access_token=access_token,
+                        meta={
+                            'image_url': image_url
+                        }
+                    )
             update_user_cookie(cookie_token, userid)
             self.set_cookie('token', cookie_token)
             self.write({

@@ -26,7 +26,7 @@ def userid_by_googleid(googleid):
     return kv_user_google()[googleid]
 
 
-def create_user_from_google(googleid, name, email, access_token):
+def create_user_from_google(googleid, name, email, access_token, meta={}):
     '''
     given google credential informations such as id, access_token, name, etc.
     create a user account in our database.
@@ -40,6 +40,7 @@ def create_user_from_google(googleid, name, email, access_token):
             userid=userid,
             name=name,
             email=email,
+            meta=meta,
             accounts=dict(
                 google=dict(id=googleid, access_token=access_token)
             )
