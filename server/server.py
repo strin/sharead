@@ -57,6 +57,12 @@ def create_file(filename, ext, data):
 
 
 def authorize(cookie_token):
+    '''
+    given a cookie_token, return userid.
+    if the user has not been authorized, then return None.
+    '''
+    if not cookie_token:
+        return None
     return user_by_cookie(cookie_token)
 
 
@@ -119,6 +125,7 @@ class AuthenticateHandler(web.RequestHandler):
                         }
                     )
             update_user_cookie(cookie_token, userid)
+            print '[setting cookie]', cookie_token
             self.set_cookie('token', cookie_token)
             self.write({
                 'response': 'OK',
