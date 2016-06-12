@@ -9,7 +9,7 @@ import urllib2
 import os
 
 #import shareread.storage.dropbox as store
-import shareread.storage.local as store
+import shareread.storage as store
 from shareread.server.utils import (parse_webkitform, parse_filename,
                                     create_thumbnail, get_thumbnail)
 from shareread.server.db import (create_file_entry, update_file_entry, get_file_entry,
@@ -43,9 +43,9 @@ def create_file(filename, ext, data):
     filehash = base64.urlsafe_b64encode(md5_code.digest())
     filehash = '.'.join([filehash, ext])
     # save file to store.
-    store.put_file(store.TEST_ACCESS_TOKEN, filehash, data_stream)
+    store.put_file(store.TEST_ACCESS_TOKEN, 'paper/' + filehash, data_stream)
     # create html view.
-    pdf2html.render_html_from_pdf(filehash)
+    pdf2html.render_html_from_pdf(filehash, data_stream)
     # get upload date.
     upload_date = str(datetime.now())
     # create thumbnail.
@@ -186,7 +186,7 @@ class UploadSubmitHandler(web.RequestHandler):
 
 class FileDownloadHanlder(web.RequestHandler):
     def get(self, filehash):
-        data = store.get_file(store.TEST_ACCESS_TOKEN, filehash).read()
+        data = store.get_file(store.TEST_ACCESS_TOKEN, 'paper/' + filehash).read()
         self.set_header('Content-Type', 'application/pdf')
         self.write(data)
 

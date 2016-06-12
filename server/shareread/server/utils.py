@@ -49,7 +49,7 @@ try:
     from wand.image import Image
     def create_thumbnail(filehash):
         with open('cache/temp.pdf', 'w') as pdf_stream:
-            file_stream = store.get_file(store.TEST_ACCESS_TOKEN, filehash)
+            file_stream = store.get_file(store.TEST_ACCESS_TOKEN, 'paper/' + filehash)
             pdf_stream.write(file_stream.read())
         with Image(filename="cache/temp.pdf[0]") as image:
             height_desired = 250

@@ -3,6 +3,7 @@
 # env
 .ropeproject
 *.swp
+*.swo
 .DS_Store
 tags
 # data
@@ -11,7 +12,7 @@ upload
 # cache
 cache
 server/upload
-server/rendered
+server/render
 # external files
 external
 # compiled coffee scripts
