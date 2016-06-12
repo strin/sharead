@@ -1,5 +1,5 @@
 window.user  = {
-	authorize_google: (googleid, name, email, access_token, image_url) ->
+	authorize_google: (googleid, name, email, access_token, image_url, callback) ->
 		$.post('auth', {
 				'googleid': googleid,
 				'name': name,
@@ -7,5 +7,8 @@ window.user  = {
 				'access_token': access_token,
 				'service': 'google',
 				'image_url': image_url
-			}, (response) ->);
+			}, (response) -> 
+				console.log('response', response);
+				callback()
+			);
 }

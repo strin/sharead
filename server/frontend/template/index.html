@@ -30,8 +30,11 @@
 		  console.log('Name: ' + name);
 		  console.log('Image URL: ' + image_url);
 		  console.log('Email: ' + email);
-		  user.authorize_google(googleid, name, email, access_token, image_url);
-		  window.location.href = 'home'
+		  user.authorize_google(googleid, name, email, access_token, image_url,
+		  	function() {
+		  		window.location.href = 'home'
+		  	}
+		  );
 		}
 		</script>
 		<script src="coffee/user.js"></script>

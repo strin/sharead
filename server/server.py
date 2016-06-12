@@ -3,8 +3,10 @@ import md5
 import hashlib
 import base64
 import json
+import string
 from StringIO import StringIO
 from datetime import datetime
+import random
 import urllib2
 import os
 
@@ -78,7 +80,7 @@ def wrap_auth(Handler):
     '''
     class WrappedHandler(Handler):
         def get(self, *args, **kwargs):
-            cookie_token = self.get_cookie('token')
+            cookie_token = self.get_secure_cookie('token')
             user = authorize(cookie_token)
             if not user:
                 self.redirect('/') # red
@@ -90,7 +92,7 @@ def wrap_auth(Handler):
 
 
         def post(self, *args, **kwargs):
-            cookie_token = self.get_cookie('token')
+            cookie_token = self.get_secure_cookie('token')
             user = authorize(cookie_token)
             if not user:
                 self.redirect('/') # red
@@ -126,7 +128,7 @@ class AuthenticateHandler(web.RequestHandler):
                     )
             update_user_cookie(cookie_token, userid)
             print '[setting cookie]', cookie_token
-            self.set_cookie('token', cookie_token)
+            self.set_secure_cookie('token', cookie_token)
             self.write({
                 'response': 'OK',
                 'cookie_token': cookie_token
@@ -141,7 +143,7 @@ class AuthenticateHandler(web.RequestHandler):
 class LogoutHandler(web.RequestHandler):
     ''' AJAX logout handler'''
     def post(self):
-        cookie_token = self.get_cookie('token')
+        cookie_token = self.get_secure_cookie('token')
         print 'delete cookie', cookie_token
         if cookie_token:
             remove_cookie(cookie_token)
@@ -312,7 +314,10 @@ handlers = [
 settings = {
     "autoreload": True,
     "debug": True,
-    "template_path": "frontend/template/"
+    "template_path": "frontend/template/",
+    "cookie_secret": hashlib.sha256(''.join([
+        random.choice(string.ascii_uppercase) for i in range(100)
+    ])).hexdigest()
 }
 
 if __name__ == "__main__":

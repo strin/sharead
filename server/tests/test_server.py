@@ -22,7 +22,9 @@ def get_cookie(obj, k):
     return cookie[k]
 
 web.RequestHandler.set_cookie = set_cookie
+web.RequestHandler.set_secure_cookie = set_cookie
 web.RequestHandler.get_cookie = get_cookie
+web.RequestHandler.get_secure_cookie = get_cookie
 
 
 class TestHandlerBase(AsyncHTTPTestCase):
