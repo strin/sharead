@@ -10,6 +10,10 @@
   border-width: 1px;
   border-color: gray;
   height: 75px;
+  width: 50px;
+  display: inline-block;
+  position: relative;
+  background-color: white;
 }
 
 .recents-item .anchor {
@@ -20,7 +24,9 @@
 }
 
 .recents-file-meta {
-  position: relative;
+  position: absolute;
+  display: inline-block;
+  top: 15px;
 }
 
 .recents-item-filename {
@@ -32,14 +38,16 @@
   width: 650px;
   outline: 0;
   background-color: transparent;
+  text-decoration: none;
 }
 
 .recents-item-filename:hover {
-    background-color: #ffffff;
+  /*background-color: #ffffff;*/
+  text-decoration: underline;
 }
 
 .recents-item-filename:focus {
-    background-color: #ffffff;
+  background-color: #ffffff;
 }
 
 
@@ -85,10 +93,11 @@ li {
   padding: 10px;
   height: 50px;
   overflow: auto;
+  position: relative;
 }
  
 li:hover {
-  background: #eee;
+  background: #eff9ff;
   cursor: pointer;
 }
 
@@ -102,14 +111,18 @@ li:hover {
   padding-left: 0px;
   border: none;
   background-image: none;
-  background-color: none;
+  background-color: transparent;
+}
+
+.chosen-container-multi .chosen-choices:hover {
+  background-color: white !important;
 }
 
 .chosen-container-multi .chosen-choices li.search-choice {
   height: 18px !important;
   padding-top: 0px;
   padding-bottom: 0px;
-  border: none;
+  border: none;  
 }
 
 .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
@@ -148,7 +161,11 @@ li:hover {
 }
 
 .chosen-container-multi .chosen-choices li.search-field input[type="text"] {
-  background-color: white !important;
+  background-color: transparent !important;
+}
+
+.chosen-container-multi .chosen-choices li.search-field input[type="text"]:hover{
+  background-color: white !important; 
 }
 
 /* searchbar */

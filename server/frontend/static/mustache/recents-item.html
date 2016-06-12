@@ -1,9 +1,12 @@
 <li class="recents-item" style="height: 80px;">
-	<img class="recents-file-thumbnail" src="file/thumbnail/{{thumb_path}}">
+	<div class="recents-file-thumbnail">
+		<img src="file/thumbnail/{{thumb_path}}" style="width: 100%;">
+	</div>
+	&nbsp;
 	<div class="recents-file-meta">
 		<a class="anchor" href="v/{{filehash}}" disabled>
 	  		<!-- <div class="recents-item-filename">{{filename}}</div> -->
-	  		<input type="text" id="filename" class="recents-item-filename" value="{{filename}}" disabled="true"></input>
+	  		<input type="text" id="filename" class="recents-item-filename" value="{{filename}}" disabled="true">
 	  	</a>
 	  	&nbsp;
   		<span class="recents-details-hide recents-details">
@@ -23,4 +26,5 @@
             </select>
 	  	</p>
 	  </div>
+
 </li>
