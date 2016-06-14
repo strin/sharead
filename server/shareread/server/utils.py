@@ -1,4 +1,7 @@
-import shareread.storage.local as store
+import shareread.storage as store
+import shareread.storage.local as local_store
+from shareread.utils import mkdir_if_necessary
+from os import path
 
 def parse_webkitform(request_body):
     """
@@ -47,28 +50,24 @@ def parse_filename(filename):
 
 try:
     from wand.image import Image
-    def create_thumbnail(filehash):
-        with open('cache/temp.pdf', 'w') as pdf_stream:
-            file_stream = store.get_file(store.TEST_ACCESS_TOKEN, 'paper/' + filehash)
-            pdf_stream.write(file_stream.read())
-        with Image(filename="cache/temp.pdf[0]") as image:
+    def create_thumbnail(local_pdf_abspath, local_thumb_abspath):
+        mkdir_if_necessary(path.dirname(local_thumb_abspath))
+        with Image(filename="%s[0]" % local_pdf_abspath) as image:
             height_desired = 250
             width = int(height_desired * image.width / image.height)
             image.resize(width, height_desired)
-            image.save(filename='cache/thumbnail.png')
-        with open('cache/thumbnail.png', 'r') as thumb_stream:
-            thumb_path = 'thumb/' + filehash + '.png'
-            store.put_file(store.TEST_ACCESS_TOKEN, thumb_path, thumb_stream)
-        return thumb_path
+            image.save(filename=local_thumb_abspath)
 
-    def get_thumbnail(thumb_path):
-        return store.get_file(store.TEST_ACCESS_TOKEN, thumb_path).read()
+
+    def get_thumbnail_path(filehash):
+        return 'thumb/' + filehash + '.png' # .png make sure an image is saved.
+
 
 except ImportError as e:
     print 'ImportError', e.message
     def create_thumbnail(filehash):
         return ''
 
-    def get_thumbnail(thumb_path):
+    def get_thumbnail_path(thumb_path):
         return ''
 

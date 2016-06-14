@@ -1,4 +1,6 @@
+### dropbox client has the following shortfalls: CORS (dropbox.com), slow (dropbox api).
 import external.dropbox as dbx
+from .local import get_file as local_get_file
 
 # TODO: insecure. test purpose only.
 APP_KEY   = '1gtl0f8cj9tj6j9'
@@ -29,6 +31,7 @@ def get_file(path):
     """
     client = dbx.client.DropboxClient(ACCESS_TOKEN)
     stream, metadata = client.get_file_and_metadata(path)
+    print 'metadata', metadata
     return stream
 
 def account_info():
@@ -41,6 +44,12 @@ def get_url(path):
     link = client.share(path, short_url=False)[u'url']
     link = link.replace('dl=0', 'dl=1') # set dl=1, direct download.
     return link
+
+
+def put_file_from_local(path, local_path):
+    stream = local_get_file(local_path)
+    put_file(path, stream)
+    stream.close()
 
 
 if __name__ == '__main__':

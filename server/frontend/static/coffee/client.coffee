@@ -49,9 +49,9 @@ window.client = {
 		)
 	,
 
-	fetchHTMLView: (filehash, callback) ->
+	fetchHTMLView: (static_url, callback) ->
 		client = this
-		$.get('/file/html/' + filehash, {}, (response) ->
+		$.get(static_url, {}, (response) ->
 			callback(response);
 		)
 

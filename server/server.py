@@ -12,8 +12,10 @@ import os
 
 #import shareread.storage.dropbox as store
 import shareread.storage as store
+import shareread.storage.local as local_store
+from shareread.utils import Timer
 from shareread.server.utils import (parse_webkitform, parse_filename,
-                                    create_thumbnail, get_thumbnail)
+                                    create_thumbnail, get_thumbnail_path)
 from shareread.server.db import (create_file_entry, update_file_entry, get_file_entry,
                                  add_recent_entry, update_inverted_index, filter_by_inverted_index,
                                  MiscInfo)
@@ -43,15 +45,38 @@ def create_file(filename, ext, data):
     md5_code = md5.new()
     md5_code.update(data)
     filehash = base64.urlsafe_b64encode(md5_code.digest())
-    filehash = '.'.join([filehash, ext])
-    # save file to store.
-    store.put_file(store.TEST_ACCESS_TOKEN, 'paper/' + filehash, data_stream)
+    # first, process files locally on server.
+    # the server might have ephermal memory, so the files created are temporary.
+    pdf_path = 'pdf/' + filehash
+    local_store.put_file('upload/' + pdf_path, data_stream)
+    # 1. render html
+    html_path = 'html/' + filehash
+    pdf2html.render_html_from_pdf(
+        local_store.get_local_path('upload/' + pdf_path),
+        local_store.get_local_path('upload/' + html_path)
+    )
+    # 2. render thumbnail.
+    thumb_path = get_thumbnail_path(filehash)
+    create_thumbnail(
+        local_store.get_local_path('upload/' + pdf_path),
+        local_store.get_local_path('upload/' + thumb_path)
+    )
+
+    # upload results to permanent storage.
+    store.put_file_from_local('html/' + filehash, 'upload/' + html_path)
+    store.put_file_from_local(get_thumbnail_path(filehash), 'upload/' + thumb_path)
+    data_stream.seek(0)
+    store.put_file('paper/' + filehash, data_stream)
+    data_stream.close()
+
+    with Timer('share urls'):
+        print 'paper url', store.get_url('paper/' + filehash)
+        print 'html url', store.get_url('html/' + filehash)
+        print 'thumb url', store.get_url(get_thumbnail_path(filehash))
     # create html view.
-    pdf2html.render_html_from_pdf(filehash, data_stream)
     # get upload date.
     upload_date = str(datetime.now())
-    # create thumbnail.
-    thumb_path = create_thumbnail(filehash)
+
     # update db.
     create_file_entry(filehash, filename, ext, upload_date, thumb_path=thumb_path)
     add_recent_entry(filehash, action_type=RECENTS_ADD)
@@ -195,24 +220,17 @@ class UploadSubmitHandler(web.RequestHandler):
 
 class FileDownloadHanlder(web.RequestHandler):
     def get(self, filehash):
-        data = store.get_file(store.TEST_ACCESS_TOKEN, 'paper/' + filehash).read()
+        data = store.get_file('paper/' + filehash).read()
         self.set_header('Content-Type', 'application/pdf')
         self.write(data)
-
-
-class FileHTMLHandler(web.RequestHandler):
-    def get(self, filehash):
-        html_path = pdf2html.get_rendered_path(filehash)
-        with open(html_path, 'r') as f:
-            self.set_header('Content-Type', 'text/html')
-            self.write(f.read())
 
 
 class FileViewHandler(web.RequestHandler):
     def get(self, filehash):
         file_entry = get_file_entry(filehash)
-        return self.render('view.html', 
+        return self.render('view.html',
                 filehash=filehash,
+                static_url=store.get_url('html/' + filehash),
                 meta=file_entry)
 
 
@@ -265,9 +283,12 @@ class RecentItemsHandler(web.RequestHandler):
         self.write(activities)
 
 class FileThumbnailHandler(web.RequestHandler):
-    def get(self, thumb_path):
+    def get(self, filehash):
         self.set_header('Content-Type', 'image/png')
-        self.write(get_thumbnail(thumb_path))
+        stream = store.get_file(get_thumbnail_path(filehash))
+        self.write(stream.read())
+        stream.close()
+
 
 class SearchHandler(web.RequestHandler):
     """
@@ -294,7 +315,6 @@ handlers = [
     (r"/mustache/(.*)", web.StaticFileHandler, {"path": "frontend/static/mustache/"}),
     (r"/upload-submit", UploadSubmitHandler),
     (r"/pin-submit", PinSubmitHandler),
-    (r"/file/html/(.*)", FileHTMLHandler),
     (r"/v/(.*)", FileViewHandler),
     (r"/file/update", FileUpdateHandler),
     (r"/file/meta", FileMetaHandler),

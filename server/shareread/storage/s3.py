@@ -28,10 +28,13 @@ def put_file(path, stream):
 
 
 def get_url(path, expire=3600):
-    with S3Conn() as conn:
-        item = Key(conn.bucket)
-        item.key = path
-        return item.generate_url(expire)
+    try:
+        with S3Conn() as conn:
+            item = Key(conn.bucket)
+            item.key = path
+            return item.generate_url(expire)
+    except S3ResponseError as error:
+        return ''
 
 
 def get_file(path):

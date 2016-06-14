@@ -46,10 +46,10 @@
         });
       });
     },
-    fetchHTMLView: function(filehash, callback) {
+    fetchHTMLView: function(static_url, callback) {
       var client;
       client = this;
-      return $.get('/file/html/' + filehash, {}, function(response) {
+      return $.get(static_url, {}, function(response) {
         return callback(response);
       });
     },

@@ -1,1 +1,1 @@
-from shareread.storage.local import *
+from shareread.storage.s3 import *

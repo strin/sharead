@@ -104,7 +104,8 @@
 		<!-- Our main JS file -->
 		<script src="/coffee/client.js"></script>
 		<script>
-		client.fetchHTMLView('{{filehash}}', function(response) {
+		client.fetchHTMLView('{%raw static_url%}', function(response) {
+			console.log('resp', response);
 			$('.view-body').html(response);
 		});
 		</script>
