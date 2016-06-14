@@ -1,8 +1,9 @@
 import external.dropbox as dbx
 
+# TODO: insecure. test purpose only.
 APP_KEY   = '1gtl0f8cj9tj6j9'
 APP_SECRET = 'dshgb079kgt8qmr'
-TEST_ACCESS_TOKEN = 'F32ygv2k14cAAAAAAAFY9rqPb-xtlAh9wzRJZSLfQ-brGFCDAa5rKZdzpywb6Td1'
+ACCESS_TOKEN = 'F32ygv2k14cAAAAAAAFY9rqPb-xtlAh9wzRJZSLfQ-brGFCDAa5rKZdzpywb6Td1'
 
 def _get_access_token():
     """
@@ -13,26 +14,33 @@ def _get_access_token():
     authorize_url = flow.start()
     return authorize_url
 
-def put_file(access_token, path, stream):
+def put_file(path, stream):
     """
     Use the access_token to put the file in Dropbox path.
     """
-    client = dbx.client.DropboxClient(access_token)
+    client = dbx.client.DropboxClient(ACCESS_TOKEN)
     response = client.put_file(path, stream, overwrite=True)
     return response #(TODO) wrap the response.
 
-def get_file(access_token, path):
+def get_file(path):
     """
     Use the access_token to get file from path.
     Return a stream.
     """
-    client = dbx.client.DropboxClient(access_token)
+    client = dbx.client.DropboxClient(ACCESS_TOKEN)
     stream, metadata = client.get_file_and_metadata(path)
     return stream
 
-def account_info(access_token):
-    client = dbx.client.DropboxClient(access_token)
+def account_info():
+    client = dbx.client.DropboxClient(ACCESS_TOKEN)
     return client.account_info()
+
+
+def get_url(path):
+    client = dbx.client.DropboxClient(ACCESS_TOKEN)
+    link = client.share(path, short_url=False)[u'url']
+    link = link.replace('dl=0', 'dl=1') # set dl=1, direct download.
+    return link
 
 
 if __name__ == '__main__':
