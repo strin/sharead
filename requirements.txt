@@ -3,3 +3,4 @@ dropbox
 wand
 redis
 fakeredis
+boto
