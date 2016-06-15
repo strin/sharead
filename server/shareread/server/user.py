@@ -4,8 +4,9 @@ import base64
 
 kv_auth_google = lambda: KeyValueStore('auth_google') # token -> {'userid': 1, 'expired': false}
 kv_user_google = lambda: KeyValueStore('user_google') # google_user_id -> user_id
-kv_user = lambda: KeyValueStore('user') # user_id -> user meta data in dict.
 kv_cookie = lambda: KeyValueStore('cookie') # cookie_token -> user_id
+# create connection to user table referenced by userid.
+kv_user = lambda userid: KeyValueStore('user:' + userid)
 
 
 def authorize_google(access_token):
@@ -26,7 +27,7 @@ def userid_by_googleid(googleid):
     return kv_user_google()[googleid]
 
 
-def create_user_from_google(googleid, name, email, access_token, meta={}):
+def create_user_from_google(googleid, name, email, access_token, **kwargs):
     '''
     given google credential informations such as id, access_token, name, etc.
     create a user account in our database.
@@ -36,15 +37,14 @@ def create_user_from_google(googleid, name, email, access_token, meta={}):
     userid = base64.urlsafe_b64encode(hashlib.md5('google-' + googleid).hexdigest())
     kv_user_google()[googleid] = userid
     kv_auth_google()[access_token] = dict(userid=userid, expired=False)
-    kv_user()[userid] = dict(
-            userid=userid,
-            name=name,
-            email=email,
-            meta=meta,
-            accounts=dict(
-                google=dict(id=googleid, access_token=access_token)
-            )
+    kv_user(userid).update(dict(
+        name=name,
+        email=email,
+        accounts=dict(
+            google=dict(id=googleid, access_token=access_token)
         )
+    ))
+    kv_user(userid).update(kwargs)
     return userid
 
 
@@ -60,3 +60,19 @@ def update_user_cookie(cookie_token, userid):
 
 def remove_cookie(cookie_token):
     kv_cookie().remove(cookie_token)
+
+
+def all_tags(userid):
+    tags = kv_user(userid)['tags']
+    if not tags:
+        return []
+    return tags
+
+
+def merge_tags(userid, new_tags):
+    """ merge new_tags into existing tags
+    """
+    tags = set(all_tags(userid))
+    tags = tags.union(set(new_tags))
+    kv_user(userid)['tags'] = list(tags)
+
