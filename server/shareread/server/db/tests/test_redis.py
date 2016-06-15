@@ -26,3 +26,20 @@ def test_scoped_kv_store():
     kv = KeyValueStore(scope_name='user-1000')
     assert(kv['meta']['user-name'] == 'tim.shi')
     assert(kv['meta']['num-files'] == 100)
+
+
+def test_kv_store_update():
+    redis.flush_db()
+    kv = KeyValueStore(scope_name='user-1000')
+    kv['meta'] = {
+        'user-name': 'tianlin.shi',
+        'num-files': 100
+    }
+    assert(kv['meta']['user-name'] == 'tianlin.shi')
+    assert(kv['meta']['num-files'] == 100)
+    kv.update({
+        'meta': None,
+        'gender': 'male'
+    })
+    assert(kv['meta'] is None)
+    assert(kv['gender'] == 'male')

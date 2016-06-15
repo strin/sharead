@@ -78,5 +78,9 @@ class KeyValueStore(object):
         return self.conn.delete(key)
 
 
+    def update(self, dic):
+        for key, value in dic.items():
+            self[key] = value
+
 
 
