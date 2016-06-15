@@ -2,16 +2,22 @@ from boto.s3.connection import S3Connection
 from boto.s3.key import Key
 from .local import get_file as local_get_file
 from StringIO import StringIO
+from shareread.utils import Timer
 
 S3_BUCKET = 'sharead'
 
 # TODO: insecure. test purpose only.
 APP_KEY = 'AKIAICZ3PNUZOWOWGK4Q'
 APP_SECRET = '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'
+# TODO: are s3conn operations re-entrant?
+s3conn = None
 
 class S3Conn(object):
     def __enter__(self):
-        self.s3conn = S3Connection(APP_KEY, APP_SECRET)
+        global s3conn
+        if not s3conn:
+            s3conn = S3Connection(APP_KEY, APP_SECRET)
+        self.s3conn = s3conn
         self.bucket = self.s3conn.get_bucket(S3_BUCKET)
         return self
 

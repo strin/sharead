@@ -265,7 +265,6 @@ class FileMetaHandler(web.RequestHandler):
         for filehash, entry in meta_by_filehash.items():
             if 'thumb_path' in entry:
                 entry['thumb_static_url'] = store.get_url(get_thumbnail_path(filehash))
-                print entry
         self.write({
             'meta_by_filehash': meta_by_filehash
         })
@@ -284,11 +283,8 @@ class RecentItemsHandler(web.RequestHandler):
         else:
             num_fetch = 9
         activities = fetch_num_activities(num_fetch)
-        for filehash, entry in activities.items():
-            if 'thumb_path' in entry:
-                entry['thumb_static_url'] = store.get_url(get_thumbnail_path(filehash))
-                print entry
         self.write(activities)
+
 
 class FileThumbnailHandler(web.RequestHandler):
     def get(self, filehash):
