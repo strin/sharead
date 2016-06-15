@@ -14,7 +14,7 @@ $ ->
 						filehash: filehash
 						fileid: fileid
 						filename: activity.filename
-						thumb_path: activity.thumb_path
+						thumb_static_url: activity.thumb_static_url
 						tags: store.miscInfo['all_tags'].map((tag) ->
 								return {
 									'tag': tag

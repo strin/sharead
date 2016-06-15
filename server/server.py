@@ -262,8 +262,12 @@ class FileMetaHandler(web.RequestHandler):
     def post(self):
         filehashes = json.loads(self.get_argument('filehashes'))
         meta_by_filehash = {filehash: get_file_entry(filehash) for filehash in filehashes}
+        for filehash, entry in meta_by_filehash.items():
+            if 'thumb_path' in entry:
+                entry['thumb_static_url'] = store.get_url(get_thumbnail_path(filehash))
+                print entry
         self.write({
-            'meta_by_filehash':meta_by_filehash
+            'meta_by_filehash': meta_by_filehash
         })
 
 class MiscInfoHandler(web.RequestHandler):
@@ -280,6 +284,10 @@ class RecentItemsHandler(web.RequestHandler):
         else:
             num_fetch = 9
         activities = fetch_num_activities(num_fetch)
+        for filehash, entry in activities.items():
+            if 'thumb_path' in entry:
+                entry['thumb_static_url'] = store.get_url(get_thumbnail_path(filehash))
+                print entry
         self.write(activities)
 
 class FileThumbnailHandler(web.RequestHandler):
