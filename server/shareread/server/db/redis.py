@@ -29,7 +29,7 @@ def flush_db():
 
 
 def loads(raw, default=None):
-    if raw:
+    if raw is not None:
         return json.loads(raw)
     return default
 
