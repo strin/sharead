@@ -1,1 +1,1 @@
-from shareread.server.db.radis import *
+from shareread.server.db.redis import *

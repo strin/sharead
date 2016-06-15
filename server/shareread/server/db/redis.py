@@ -1,3 +1,6 @@
+'''
+this is a key-value store wrapper around redis.
+'''
 import redis
 from os import environ
 import json
@@ -69,28 +72,6 @@ class KeyValueStore(object):
         return self.conn.delete(self.wrap_key(key))
 
 
-class MiscInfo(object):
-    def _fetch_row(self):
-        return conn().hget('info', 'tags')
-
-
-    @property
-    def all_tags(self):
-        row = self._fetch_row()
-        return loads(row, default=[])
-
-
-    @all_tags.setter
-    def all_tags(self, tags):
-        conn().hset('info', 'tags', dumps(tags))
-
-
-    def merge_tags(self, new_tags):
-        """ merge new_tags into existing tags
-        """
-        tags = set(self.all_tags)
-        tags = tags.union(set(new_tags))
-        self.all_tags = list(tags)
 
 
 def get_recent_entries(num_entries):
@@ -172,30 +153,6 @@ def update_file_entry(filehash, **kwargs):
     print 'new_entry', new_entry
 
     conn().hset('meta', filehash, dumps(new_entry))
-
-
-def create_file_entry(filehash, filename, fileext = '',
-                      upload_date = '', thumb_path='', tags=[]):
-    """
-    use DBConn to update/insert a file entry
-    Parameter
-    ========
-        filehash: hash of the file, should be unique for each file
-        filename: filename that describes the file
-        fileext: file extension
-        upload_date: date of upload.
-    """
-    # merge into global tags.
-    MiscInfo().merge_tags(tags)
-
-    data = dict(filehash=filehash,
-                filename=filename,
-                fileext=fileext,
-                upload_date=upload_date,
-                thumb_path=thumb_path,
-                tags=tags)
-
-    conn().hset('meta', filehash, dumps(data))
 
 
 def update_inverted_index(tags, filehash):
