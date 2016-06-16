@@ -34,6 +34,7 @@ def create_user_from_google(googleid, name, email, access_token, **kwargs):
     create userid = [service] + [userid@service]
     return allocated userid
     '''
+    print '[creating user]'
     userid = base64.urlsafe_b64encode(hashlib.md5('google-' + googleid).hexdigest())
     kv_user_google()[googleid] = userid
     kv_auth_google()[access_token] = dict(userid=userid, expired=False)
@@ -48,10 +49,19 @@ def create_user_from_google(googleid, name, email, access_token, **kwargs):
     return userid
 
 
-def user_by_cookie(cookie_token):
+def userid_by_cookie(cookie_token):
     userid = kv_cookie()[cookie_token]
+    return userid
+
+
+def user_by_id(userid):
     if userid:
-        return kv_user()[userid]
+        return kv_user(userid)
+
+
+def user_by_cookie(cookie_token):
+    userid = userid_by_cookie(cookie_token)
+    return user_by_id(userid)
 
 
 def update_user_cookie(cookie_token, userid):

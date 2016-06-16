@@ -1,4 +1,4 @@
-import shareread.server.db.redis as redis
+import shareread.server.db.redisdb as redis
 from shareread.server.db.redis import KeyValueStore, SortedList
 
 redis.set_testing_mode()

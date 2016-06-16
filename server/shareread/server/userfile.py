@@ -1,5 +1,5 @@
 '''
-this module provides high-level functions to upload, access and retrive files.
+this module provides functions to manipuate user's file metadata.
 '''
 from shareread.utils import Timer
 import shareread.storage as store
@@ -20,6 +20,9 @@ kv_meta = lambda userid, filehash: KeyValueStore('meta:' + userid + ':' + fileha
 # recent actions to files by user.
 kv_recents = lambda userid: SortedList('recents:' + userid)
 
+# inverted search by tags.
+kv_inverted = lambda userid: KeyValueStore('inverted:' + userid)
+
 
 def create_file_entry(userid, filehash, filename, **kwargs):
     data = dict(filehash=filehash, filename=filename)
@@ -29,9 +32,11 @@ def create_file_entry(userid, filehash, filename, **kwargs):
 
 def get_file_entry(userid, filehash):
     entry = kv_meta(userid, filehash).mget([
-        'filename', 'thumb_path'
+        'filename', 'tags'
     ])
-    entry[filehash] = filehash
+    entry['filehash'] = filehash
+    if not entry.get('tags'):
+        entry['tags'] = []
     return entry
 
 
@@ -41,8 +46,7 @@ def update_file_entry(userid, filehash, **kwargs):
         "filename",
         "fileext",
         "tags",
-        "upload_date"
-        "thumb_path"
+        "upload_datetime"
     ])
     kv_meta(userid, filehash).update(
         {k: v for (k, v) in kwargs.items() if k in whitelist}
@@ -55,7 +59,6 @@ RECENTS_UPDATE = 'RECENTS_UPDATE'
 
 def get_recent_entries(userid, num_entries):
     entries = kv_recents(userid)[-1:0]
-    print 'entries', entries
     filehashes = []
     filehash_set = set()
     for entry in entries:
@@ -87,77 +90,36 @@ def add_recent_entry(userid, filehash, action_type, action_date = None):
         action_type=action_type
     ), rowid)
 
-def fetch_num_activities(num_fetch):
+def fetch_num_activities(userid, num_fetch):
     # first pass: fetch filehashes in order.
-    filehashes = get_recent_entries(num_fetch)
+    filehashes = get_recent_entries(userid, num_fetch)
     return {
         'filehashes':filehashes,
     }
 
 
-def update_inverted_index(tags, filehash):
+def update_inverted_index(userid, tags, filehash):
     """
-    use DBConn to update the inverted index table
+    update the inverted index table
     """
     for tag in tags:
-        filehashes = conn().hget('inverted', tag)
-        filehashes = loads(filehashes, default=[])
+        filehashes = kv_inverted(userid)[tag]
+        if not filehashes:
+            filehashes = []
         filehashes.append(filehash)
-        conn().hset('inverted', tag, dumps(filehashes))
+        kv_inverted(userid)[tag] = filehashes
 
 
-def filter_by_inverted_index(tags):
+def filter_by_inverted_index(userid, tags):
     """
-    use DBConn to filter the filehashes based on the tags given
+    filter the filehashes based on the tags given
     """
     result = None
     for tag in tags:
-        filehashes = loads(conn().hget('inverted', tag))
+        filehashes = kv_inverted(userid)[tag]
         if filehashes:
             filehash_set = set(filehashes)
             result = result.intersection(filehash_set) if result else filehash_set
     return result if result else set()
 
-
-def create_file(filename, ext, data):
-    data_stream = StringIO(data)
-    # get filehash.
-    md5_code = hashlib.md5(data).digest()
-    filehash = base64.urlsafe_b64encode(md5_code)
-    # first, process files locally on server.
-    # the server might have ephermal memory, so the files created are temporary.
-    pdf_path = 'pdf/' + filehash
-    local_store.put_file('upload/' + pdf_path, data_stream)
-    # 1. render html
-    html_path = 'html/' + filehash
-    pdf2html.render_html_from_pdf(
-        local_store.get_local_path('upload/' + pdf_path),
-        local_store.get_local_path('upload/' + html_path)
-    )
-    # 2. render thumbnail.
-    thumb_path = get_thumbnail_path(filehash)
-    create_thumbnail(
-        local_store.get_local_path('upload/' + pdf_path),
-        local_store.get_local_path('upload/' + thumb_path)
-    )
-
-    # upload results to permanent storage.
-    store.put_file_from_local('html/' + filehash, 'upload/' + html_path)
-    store.put_file_from_local(get_thumbnail_path(filehash), 'upload/' + thumb_path)
-    data_stream.seek(0)
-    store.put_file('paper/' + filehash, data_stream)
-    data_stream.close()
-
-    with Timer('share urls'):
-        print 'paper url', store.get_url('paper/' + filehash)
-        print 'html url', store.get_url('html/' + filehash)
-        print 'thumb url', store.get_url(get_thumbnail_path(filehash))
-    # create html view.
-    # get upload date.
-    upload_date = str(datetime.now())
-
-    # update db.
-    create_file_entry(filehash, filename, ext, upload_date, thumb_path=thumb_path)
-    add_recent_entry(filehash, action_type=RECENTS_ADD)
-    return filehash
 

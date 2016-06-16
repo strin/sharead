@@ -12,11 +12,12 @@ import shareread.storage.local as local_store
 from shareread.utils import Timer
 from shareread.server.utils import (parse_webkitform, parse_filename,
                                     create_thumbnail, get_thumbnail_path)
-from shareread.server.db import (create_file_entry, update_file_entry, get_file_entry,
-                                 add_recent_entry, update_inverted_index, filter_by_inverted_index,
-                                 MiscInfo)
-from shareread.server.recents import (RECENTS_ADD, RECENTS_UPDATE, fetch_num_activities)
-from shareread.server.user import (user_by_cookie, authorize_google, create_user_from_google, update_user_cookie, remove_cookie)
+from shareread.server.userfile import (create_file_entry, update_file_entry, get_file_entry,
+                                       add_recent_entry, update_inverted_index, filter_by_inverted_index,
+                                       RECENTS_ADD, RECENTS_UPDATE, fetch_num_activities)
+from shareread.server.user import (user_by_cookie, authorize_google, userid_by_cookie,
+                                   create_user_from_google, update_user_cookie,
+                                   remove_cookie, user_by_id, all_tags, merge_tags)
 from shareread.server.file import (create_file)
 import shareread.document.pdf2html as pdf2html
 
@@ -26,9 +27,9 @@ def wrap_template(template):
         def get(self):
             if 'user' in self.__dict__: # with authentication.
                 user = dict(
-                    name=self.user.get('name'),
-                    email=self.user.get('email'),
-                    meta=self.user.get('meta')
+                    name=self.user['name'],
+                    email=self.user['email'],
+                    meta=self.user['meta']
                 )
                 self.render(template, user=user)
             else:
@@ -44,7 +45,7 @@ def authorize(cookie_token):
     '''
     if not cookie_token:
         return None
-    return user_by_cookie(cookie_token)
+    return userid_by_cookie(cookie_token)
 
 
 def make_cookie_token(service, access_token):
@@ -60,24 +61,30 @@ def wrap_auth(Handler):
     class WrappedHandler(Handler):
         def get(self, *args, **kwargs):
             cookie_token = self.get_secure_cookie('token')
-            user = authorize(cookie_token)
+            userid = authorize(cookie_token)
+            user = user_by_id(userid)
             if not user:
+                print '[user not auth]'
                 self.redirect('/') # red
                 return
             else:
                 print '[authorized] cookie = ', cookie_token
                 self.user = user
+                self.userid = userid
                 return Handler.get(self, *args, **kwargs)
 
 
         def post(self, *args, **kwargs):
             cookie_token = self.get_secure_cookie('token')
-            user = authorize(cookie_token)
+            userid = authorize(cookie_token)
+            user = user_by_id(userid)
             if not user:
+                print '[user not auth]'
                 self.redirect('/') # red
                 return
             else:
                 self.user = user
+                self.userid = userid
                 return Handler.post(self, *args, **kwargs)
     return WrappedHandler
 
@@ -119,6 +126,20 @@ class AuthenticateHandler(web.RequestHandler):
             })
 
 
+def upload_file(userid, filename, ext, data):
+    # first, store file.
+    filehash = create_file(filename, ext, data)
+    print '[upload] ', userid, filehash
+    # add file metadata to user's library.
+    upload_datetime = str(datetime.now())
+    create_file_entry(userid, filehash, filename,
+                      fileext=ext,
+                      update_datetime=upload_datetime)
+    # add event to recents log.
+    add_recent_entry(userid, filehash, action_type=RECENTS_ADD,
+                     action_date=None)
+
+
 class LogoutHandler(web.RequestHandler):
     ''' AJAX logout handler'''
     def post(self):
@@ -142,7 +163,7 @@ class PinSubmitHandler(web.RequestHandler):
         (filename, ext) = parse_filename(filename_full)
         stream = urllib2.urlopen(link)
         data = stream.read()
-        filehash = create_file(filename, ext, data)
+        filehash = upload_file(self.userid, filename, ext, data)
         print '[pin]', filename, ext, filehash
         self.write({
             'filehash':filehash,
@@ -163,7 +184,7 @@ class UploadSubmitHandler(web.RequestHandler):
             return
         # get data.
         data = form['data']
-        filehash = create_file(filename, ext, data)
+        filehash = upload_file(self.userid, filename, ext, data)
         print '[upload]', filename, ext, filehash
         self.write({
             'filehash':filehash,
@@ -181,7 +202,7 @@ class FileDownloadHanlder(web.RequestHandler):
 
 class FileViewHandler(web.RequestHandler):
     def get(self, filehash):
-        file_entry = get_file_entry(filehash)
+        file_entry = get_file_entry(self.userid, filehash)
         return self.render('view.html',
                 filehash=filehash,
                 static_url=store.get_url('html/' + filehash),
@@ -201,13 +222,16 @@ class FileUpdateHandler(web.RequestHandler):
             value = json.loads(self.get_argument(key))
             update_dict[key] = value
         # update db.
-        update_file_entry(filehash, **update_dict)
-        add_recent_entry(filehash, action_type=RECENTS_UPDATE)
+        update_file_entry(self.userid, filehash, **update_dict)
+        add_recent_entry(self.userid, filehash, action_type=RECENTS_UPDATE)
         if 'tags' in update_dict: # update inverted-index table for search.
-            update_inverted_index(update_dict['tags'], filehash)
+            update_inverted_index(self.userid, update_dict['tags'], filehash)
+            merge_tags(self.userid, update_dict['tags'])
+
         self.write({
             'response':'OK'
         })
+
 
 class FileMetaHandler(web.RequestHandler):
     """
@@ -215,20 +239,23 @@ class FileMetaHandler(web.RequestHandler):
     """
     def post(self):
         filehashes = json.loads(self.get_argument('filehashes'))
-        meta_by_filehash = {filehash: get_file_entry(filehash) for filehash in filehashes}
+        meta_by_filehash = {
+            filehash: get_file_entry(self.userid, filehash) for filehash in filehashes
+        }
+        print 'meta', meta_by_filehash
         for filehash, entry in meta_by_filehash.items():
-            if 'thumb_path' in entry:
-                entry['thumb_static_url'] = store.get_url(get_thumbnail_path(filehash))
+            entry['thumb_static_url'] = store.get_url(get_thumbnail_path(filehash))
         self.write({
             'meta_by_filehash': meta_by_filehash
         })
 
+
 class MiscInfoHandler(web.RequestHandler):
     def get(self):
-        misc = MiscInfo()
         self.write({
-            'all_tags': misc.all_tags
+            'all_tags': all_tags(self.userid)
         })
+
 
 class RecentItemsHandler(web.RequestHandler):
     def get(self):
@@ -236,7 +263,7 @@ class RecentItemsHandler(web.RequestHandler):
             num_fetch = int(self.get_argument('num_fetch'))
         else:
             num_fetch = 9
-        activities = fetch_num_activities(num_fetch)
+        activities = fetch_num_activities(self.userid, num_fetch)
         self.write(activities)
 
 
@@ -258,11 +285,13 @@ class SearchHandler(web.RequestHandler):
     def post(self):
         tags = json.loads(self.get_argument('tags'))
         keywords = json.loads(self.get_argument('keywords'))
-        filehashes = filter_by_inverted_index(tags)
+        filehashes = filter_by_inverted_index(self.userid, tags)
         filehashes = list(filehashes) # json convertible.
+        print 'search filehashes', filehashes
         self.write({
             'filehashes': filehashes
         })
+
 
 handlers = [
     (r"/img/(.*)", web.StaticFileHandler, {"path": "frontend/static/img/"}),
@@ -271,18 +300,18 @@ handlers = [
     (r"/coffee/(.*)", web.StaticFileHandler, {"path": "frontend/static/coffee/"}),
     (r"/fonts/(.*)", web.StaticFileHandler, {"path": "frontend/static/fonts/"}),
     (r"/mustache/(.*)", web.StaticFileHandler, {"path": "frontend/static/mustache/"}),
-    (r"/upload-submit", UploadSubmitHandler),
-    (r"/pin-submit", PinSubmitHandler),
-    (r"/v/(.*)", FileViewHandler),
-    (r"/file/update", FileUpdateHandler),
-    (r"/file/meta", FileMetaHandler),
+    (r"/upload-submit", wrap_auth(UploadSubmitHandler)),
+    (r"/pin-submit", wrap_auth(PinSubmitHandler)),
+    (r"/v/(.*)", wrap_auth(FileViewHandler)),
+    (r"/file/update", wrap_auth(FileUpdateHandler)),
+    (r"/file/meta", wrap_auth(FileMetaHandler)),
     (r"/file/thumbnail/(.*)", FileThumbnailHandler),
     (r"/file/download/(.*)", FileDownloadHanlder),
-    (r"/db/misc", MiscInfoHandler),
-    (r"/search", SearchHandler),
+    (r"/db/misc", wrap_auth(MiscInfoHandler)),
+    (r"/search", wrap_auth(SearchHandler)),
     (r"/upload", wrap_template('upload.html')),
     (r"/recents", wrap_auth(wrap_template('recents.html'))),
-    (r"/recents/fetch", RecentItemsHandler),
+    (r"/recents/fetch", wrap_auth(RecentItemsHandler)),
     (r"/home", wrap_auth(wrap_template('recents.html'))),
     (r"/auth", AuthenticateHandler),
     (r"/logout", LogoutHandler),
