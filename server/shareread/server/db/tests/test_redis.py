@@ -43,3 +43,14 @@ def test_kv_store_update():
     })
     assert(kv['meta'] is None)
     assert(kv['gender'] == 'male')
+
+
+def test_kv_store_mget():
+    redis.flush_db()
+    kv = KeyValueStore(scope_name='user-1000')
+    kv['name'] = 'tim'
+    kv['gender'] = 'male'
+    assert(kv.mget(['name', 'gender']) == {
+        'name': 'tim',
+        'gender': 'male'
+    })

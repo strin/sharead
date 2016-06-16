@@ -83,4 +83,8 @@ class KeyValueStore(object):
             self[key] = value
 
 
+    def mget(self, keys):
+        return {k: self[k] for k in keys}
+
+
 
