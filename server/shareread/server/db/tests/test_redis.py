@@ -1,5 +1,5 @@
 import shareread.server.db.redisdb as redis
-from shareread.server.db.redis import KeyValueStore, SortedList
+from shareread.server.db.redisdb import KeyValueStore, SortedList
 
 redis.set_testing_mode()
 
@@ -56,6 +56,15 @@ def test_kv_store_mget():
     })
 
 
+
+def test_kv_delete():
+    redis.flush_db()
+    kv = KeyValueStore(scope_name='user-1000')
+    kv['name'] = 'tim'
+    kv.remove('name')
+    assert(kv['name'] is None)
+
+
 def test_sored_list():
     redis.flush_db()
     l = SortedList(scope_name='recents')
@@ -63,4 +72,6 @@ def test_sored_list():
     l.append({'hi': 'me'}, 2)
     assert(l[0:-1] == ['a', {'hi': 'me'}])
     assert(l[-1:0] == [{'hi': 'me'}, 'a'])
+
+
 

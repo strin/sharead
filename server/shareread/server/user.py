@@ -69,6 +69,7 @@ def update_user_cookie(cookie_token, userid):
 
 
 def remove_cookie(cookie_token):
+    print '[removing cookie]', cookie_token
     kv_cookie().remove(cookie_token)
 
 

@@ -28,7 +28,6 @@ def test_get_file_entry():
                 thumb_path='test.png'
     )
     assert(get_file_entry(userid, filehash)['filename'] == 'test')
-    assert(get_file_entry(userid, filehash)['thumb_path'] == 'test.png')
 
 
 def test_update_file_entry():

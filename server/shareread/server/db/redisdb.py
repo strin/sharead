@@ -75,7 +75,10 @@ class KeyValueStore(object):
 
 
     def remove(self, key):
-        return self.conn.delete(key)
+        if self.scope_name:
+            return self.conn.hdel(self.scope_name, key)
+        else:
+            return self.conn.delete(key)
 
 
     def update(self, dic):
