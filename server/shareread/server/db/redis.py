@@ -113,7 +113,7 @@ class SortedList(object):
         if i == j:
             return []
         elif i < j:
-            return load_all(self.conn.zrange('recents', i, j, desc=False))
+            return load_all(self.conn.zrange(self.scope_name, i, j, desc=False))
         else:
-            return list(reversed(load_all(self.conn.zrange('recents', j, i, desc=False))))
+            return list(reversed(load_all(self.conn.zrange(self.scope_name, j, i, desc=False))))
 
