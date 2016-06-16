@@ -1,5 +1,5 @@
 import shareread.server.db.redis as redis
-from shareread.server.db.redis import KeyValueStore
+from shareread.server.db.redis import KeyValueStore, SortedList
 
 redis.set_testing_mode()
 
@@ -54,3 +54,13 @@ def test_kv_store_mget():
         'name': 'tim',
         'gender': 'male'
     })
+
+
+def test_sored_list():
+    redis.flush_db()
+    l = SortedList(scope_name='recents')
+    l.append('a', 1)
+    l.append({'hi': 'me'}, 2)
+    assert(l[0:-1] == ['a', {'hi': 'me'}])
+    assert(l[-1:0] == [{'hi': 'me'}, 'a'])
+

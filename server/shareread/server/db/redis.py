@@ -88,3 +88,32 @@ class KeyValueStore(object):
 
 
 
+class SortedList(object):
+    '''
+    a model for storing sorted list (increasing).
+    '''
+    def __init__(self, scope_name=None):
+        self.conn = conn()
+        self.scope_name = scope_name
+
+
+    def append(self, item, score):
+        self.conn.zadd(self.scope_name, score, dumps(item))
+
+
+    def __len__(self):
+        return self.conn.zcount(self.scope_name, -float('inf'), float('inf'))
+
+
+    def __getslice__(self, i, j):
+        load_all = lambda objs: [loads(obj) for obj in objs]
+        trans = lambda num: len(self) - num if num < 0 else num
+        i = trans(i)
+        j = trans(j)
+        if i == j:
+            return []
+        elif i < j:
+            return load_all(self.conn.zrange('recents', i, j, desc=False))
+        else:
+            return list(reversed(load_all(self.conn.zrange('recents', j, i, desc=False))))
+
