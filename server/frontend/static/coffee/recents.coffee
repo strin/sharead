@@ -13,7 +13,8 @@ $ ->
 					view = {
 						filehash: filehash
 						fileid: fileid
-						filename: activity.filename
+						filename: activity.title
+						authors: activity.authors
 						thumb_static_url: activity.thumb_static_url
 						tags: store.miscInfo['all_tags'].map((tag) ->
 								return {

@@ -13,8 +13,16 @@
   			<div class="glyphicon glyphicon-edit recents-edit-btn">
   			</div>
   		</span>
-	  	<br> <br>
+	  	<br> 
 	  	
+	  	<p class="recents-item-authors">
+	  	{{#authors}}
+	  	{{first_name}} {{last_name}} &nbsp;
+	  	{{/authors}}
+	  	</p>
+
+	  	
+
 	  	<p class="recents-details-hide recents-details">
 	  		<select id="selector_{{fileid}}" data-placeholder="Add tags to this paper." multiple class="recents-tag chosen-select" tabindex="3">
 	  			{{#tags}}

@@ -19,6 +19,8 @@ from shareread.server.user import (user_by_cookie, authorize_google, userid_by_c
                                    create_user_from_google, update_user_cookie,
                                    remove_cookie, user_by_id, all_tags, merge_tags)
 from shareread.server.file import (create_file)
+from shareread.document.metadata import extract_metadata_from_pdf
+from shareread.server.paper import (save_paper_entry, get_paper_entry)
 import shareread.document.pdf2html as pdf2html
 
 
@@ -89,6 +91,26 @@ def wrap_auth(Handler):
     return WrappedHandler
 
 
+def load_meta_by_filehash(request, *filehashes):
+    meta_by_filehash = {}
+    for filehash in filehashes:
+        file_entry = get_file_entry(request.userid, filehash)
+        paper_entry = get_paper_entry(filehash)
+        final_entry = file_entry
+        # merge paper entry with file entry.
+        if paper_entry.get('title'):
+            final_entry['title'] = paper_entry['title']
+        else:
+            final_entry['title'] = file_entry['filename']
+        if paper_entry.get('authors'):
+            final_entry['authors'] = paper_entry['authors']
+        else:
+            final_entry['authros'] = []
+        file_entry['thumb_static_url'] = store.get_url(get_thumbnail_path(filehash))
+        meta_by_filehash[filehash] = final_entry
+    return meta_by_filehash
+
+
 class AuthenticateHandler(web.RequestHandler):
     ''' AJAX authentication handler'''
     def post(self):
@@ -135,6 +157,10 @@ def upload_file(userid, filename, ext, data):
     create_file_entry(userid, filehash, filename,
                       fileext=ext,
                       update_datetime=upload_datetime)
+    # extract file metadata.
+    metadata = extract_metadata_from_pdf(data)
+    print 'saving metadata', metadata
+    save_paper_entry(filehash, metadata)
     # add event to recents log.
     add_recent_entry(userid, filehash, action_type=RECENTS_ADD,
                      action_date=None)
@@ -202,11 +228,11 @@ class FileDownloadHanlder(web.RequestHandler):
 
 class FileViewHandler(web.RequestHandler):
     def get(self, filehash):
-        file_entry = get_file_entry(self.userid, filehash)
+        metadata = load_meta_by_filehash(self, filehash)[filehash]
         return self.render('view.html',
                 filehash=filehash,
                 static_url=store.get_url('html/' + filehash),
-                meta=file_entry)
+                meta=metadata)
 
 
 class FileUpdateHandler(web.RequestHandler):
@@ -239,12 +265,8 @@ class FileMetaHandler(web.RequestHandler):
     """
     def post(self):
         filehashes = json.loads(self.get_argument('filehashes'))
-        meta_by_filehash = {
-            filehash: get_file_entry(self.userid, filehash) for filehash in filehashes
-        }
+        meta_by_filehash = load_meta_by_filehash(self, *filehashes)
         print 'meta', meta_by_filehash
-        for filehash, entry in meta_by_filehash.items():
-            entry['thumb_static_url'] = store.get_url(get_thumbnail_path(filehash))
         self.write({
             'meta_by_filehash': meta_by_filehash
         })

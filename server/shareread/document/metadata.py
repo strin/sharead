@@ -2,12 +2,14 @@
 import urllib2
 from pprint import pprint
 import json
+from StringIO import StringIO
+import string
 
 ACCESS_TOKEN = 'MSwxNDY2NTUwOTEwNzQxLDE2MTM1MjgzLDMyNDksYWxsLCwsMGE4My02YWU5Y2Y0NzU1MWQ5NmY5MjQxZTk3YmY3YjY1YWRlMzQwMCxiOGQyMzE1Ni05M2NjLTM2ZDUtYmI0OS01OWJlOTZlOTIxYTAsQ0FDeEtnQVppdHNSSE1XUEFsVEJlYkJVMjI4'
 
 
-def extract_metadata_from_pdf(stream):
-    stream.seek(0)
+def extract_metadata_from_pdf(data):
+    stream = StringIO(data)
     request = urllib2.Request('https://api.mendeley.com/documents',
                               data=stream.read(),
                               headers={
@@ -17,6 +19,6 @@ def extract_metadata_from_pdf(stream):
                               })
     resp = urllib2.urlopen(request).read()
     result = json.loads(resp)
-    result['title'] = result['title'].title() # convert to same title format.
+    result['title'] = string.capwords(result['title']) # convert to same title format.
     return result
 

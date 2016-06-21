@@ -29,10 +29,16 @@
   top: 15px;
 }
 
+.recents-item-authors {
+  font: 13px Helvetica, Verdana, sans-serif;
+  line-height: 1.5;
+}
+
 .recents-item-filename {
   overflow: hidden;
   text-overflow: ellipsis;
   font: bold 15px Helvetica, Verdana, sans-serif;
+  line-height: 1.5;
   border: none;
   position: relative;
   width: 650px;
