@@ -151,17 +151,19 @@ class AuthenticateHandler(web.RequestHandler):
 def upload_file(userid, filename, ext, data):
     # first, store file.
     filehash = create_file(filename, ext, data)
-    print '[upload] ', userid, filehash
+    print '[upload] start ', userid, filehash
     # add file metadata to user's library.
     upload_datetime = str(datetime.now())
     create_file_entry(userid, filehash, filename,
                       fileext=ext,
                       update_datetime=upload_datetime)
     # extract file metadata.
+    print '[upload] extracting metadata'
     metadata = extract_metadata_from_pdf(data)
-    print 'saving metadata', metadata
+    print '[upload] saving metadata to db', metadata
     save_paper_entry(filehash, metadata)
     # add event to recents log.
+    print '[upload] creating file entry'
     add_recent_entry(userid, filehash, action_type=RECENTS_ADD,
                      action_date=None)
 
