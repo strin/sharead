@@ -1,16 +1,38 @@
 {
-  "name": "Papertroll",
-  "description": "Save to papertroll",
-  "version": "0.1",
+  "name": "Sharead",
+  "description": "Save to sharead",
+  "version": "0.2",
   "permissions": [
-    "activeTab", "http://*/"
+    "activeTab", "http://*/", "identity", "storage"
   ],
-  "background": {
-    "scripts": ["background.js"],
-    "persistent": false
-  },
+  // "background": {
+  //   "page": "background.html"
+    // "scripts": ["background.js"],
+    // "persistent": false
+  // },
   "browser_action": {
-    "default_title": "Save to papertroll"
+    "default_title": "Save to sharead"
   },
+
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiiotkeIZLctUxkHg66GvmTjwLVK4gD6PihlRQUJTSvfxDoDGvM+HTMdRTn0aNbav0dGKJgS3rc4rzyxs/Qh38Ndicy5weHCvew7WkMR1Gz/fZH5/6oKx0m3l2o+t18dMe3qdE7CEyqM0336lDSeF1b8GhOka8gOJ2/TPOPGvnDluiaBmjG4UzPgEoxqeyJMWlzoaDyyonG7i7hFXog/L/pRIMNFfPg3DwsTiAFvSq33vybOf8kK1/35U7eUHQNnuZc6crQojbbCvIDg89uGQb23rP7mLZsszcdcVB9cLWmisuIV1j13DqqTOnkAi+gbV1H9CLC8BLDx+B9CiC2tyeQIDAQAB",
+  
+  "oauth2": {
+      "client_id": "611594315110-9b0qsu7kukjmv4n1gi1m7qdg80a0jvb4.apps.googleusercontent.com",
+      "scopes": [
+          "https://www.googleapis.com/auth/userinfo.profile",
+          "https://www.googleapis.com/auth/userinfo.email"
+      ]   
+  },
+
+  "browser_action": {
+    // "default_icon": "icon.png",
+    "default_title": "sharead",
+    "default_popup": "popup.html"
+  },
+
+  "options_page": "options.html",
+
+  "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'",
+
   "manifest_version": 2
 }
