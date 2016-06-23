@@ -62,7 +62,10 @@ def wrap_auth(Handler):
     '''
     class WrappedHandler(Handler):
         def get(self, *args, **kwargs):
-            cookie_token = self.get_secure_cookie('token')
+            if 'cookie' in self.request.arguments: # cookie explicit in request.
+                cookie_token = self.get_argument('cookie')
+            else:
+                cookie_token = self.get_secure_cookie('token')
             userid = authorize(cookie_token)
             user = user_by_id(userid)
             if not user:
@@ -77,7 +80,10 @@ def wrap_auth(Handler):
 
 
         def post(self, *args, **kwargs):
-            cookie_token = self.get_secure_cookie('token')
+            if 'cookie' in self.request.arguments: # cookie explicit in request.
+                cookie_token = self.get_argument('cookie')
+            else:
+                cookie_token = self.get_secure_cookie('token')
             userid = authorize(cookie_token)
             user = user_by_id(userid)
             if not user:
