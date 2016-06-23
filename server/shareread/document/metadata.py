@@ -29,7 +29,7 @@ def extract_metadata_from_pdf(data):
                               auth=HTTPBasicAuth(CLIENT_ID, CLIENT_SECRET)
                         ).json()
     access_token = resp['access_token']
-    assert(resp['refresh_token'] == REFRESH_TOKEN)
+    # assert(resp['refresh_token'] == REFRESH_TOKEN)
     # use access token to request paper metadata.
     result = requests.post('https://api.mendeley.com/documents',
                             data=stream.read(),
