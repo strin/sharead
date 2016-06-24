@@ -19,6 +19,7 @@ from shareread.server.user import (user_by_cookie, authorize_google, userid_by_c
                                    create_user_from_google, update_user_cookie,
                                    remove_cookie, user_by_id, all_tags, merge_tags)
 from shareread.server.file import (create_file)
+from shareread.server.comment import (get_all_comments, add_comment, delete_comment)
 import shareread.document.pdf2html as pdf2html
 
 
@@ -292,6 +293,21 @@ class SearchHandler(web.RequestHandler):
             'filehashes': filehashes
         })
 
+class CommentsHandler(web.RequestHandler):
+    def post(self):
+        paperid = json.loads(self.get_argument('paperid'))
+        threadid = json.loads(self.get_argument('threadid'))
+        text = json.loads(self.get_argument('text'))
+        commentid = add_comment(paperid, threadid, text)
+        self.write({
+            'response': commentid
+        })
+
+    # use filehash as paperid?
+    def get(self, filehash):
+        comments = get_all_comments(filehash)
+        self.write(comments)
+
 
 handlers = [
     (r"/img/(.*)", web.StaticFileHandler, {"path": "frontend/static/img/"}),
@@ -315,6 +331,7 @@ handlers = [
     (r"/home", wrap_auth(wrap_template('recents.html'))),
     (r"/auth", AuthenticateHandler),
     (r"/logout", LogoutHandler),
+    (r"/comments/(.*)", wrap_auth(CommentsHandler)),
     (r"/", wrap_template('index.html'))
 ]
 
