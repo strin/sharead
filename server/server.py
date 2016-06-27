@@ -344,10 +344,16 @@ settings = {
     ])).hexdigest()
 }
 
+import __builtin__
+__builtin__.testmode = lambda: True
+
 if __name__ == "__main__":
     application = web.Application(handlers, **settings)
     port = int(os.environ.get("PORT", 5000))
-    application.listen(port, address="0.0.0.0")
+    if __builtin__.testmode():
+        application.listen(port, address="127.0.0.1")
+    else:
+        application.listen(port, address="0.0.0.0")
     ioloop.IOLoop.current().start()
 
 

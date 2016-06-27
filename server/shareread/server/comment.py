@@ -48,7 +48,7 @@ def add_thread(paperid):
     return threadid
 
 # add comment
-def add_comment(paperid, threadid = None, userid, text):
+def add_comment(paperid, userid, text, threadid = None):
     if not threadid:
         threadid = add_thread(paperid)
     _kv_comments = kv_comments(threadid)

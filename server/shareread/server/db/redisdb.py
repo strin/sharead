@@ -5,16 +5,22 @@ import redis
 from os import environ
 import json
 from datetime import datetime
+import __builtin__
 
 _redis_store = None
 
+
 def conn():
     global _redis_store
-    if not _redis_store: # establish a new connection.
-        if 'REDIS_URL' in environ:
-            _redis_store = redis.StrictRedis.from_url(environ.get('REDIS_URL'))
-        else:
-            _redis_store = redis.StrictRedis(host='localhost', port=6379, db=0)
+    if __builtin__.testmode():
+        import fakeredis
+        _redis_store = fakeredis.FakeStrictRedis()
+    else:
+        if not _redis_store: # establish a new connection.
+            if 'REDIS_URL' in environ:
+                _redis_store = redis.StrictRedis.from_url(environ.get('REDIS_URL'))
+            else:
+                _redis_store = redis.StrictRedis(host='localhost', port=6379, db=0)
     return _redis_store
 
 
