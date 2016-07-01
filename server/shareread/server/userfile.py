@@ -34,6 +34,8 @@ def get_file_entry(userid, filehash):
     entry = kv_meta(userid, filehash).mget([
         'filename', 'tags'
     ])
+    if not entry:
+        return None
     entry['filehash'] = filehash
     if not entry.get('tags'):
         entry['tags'] = []

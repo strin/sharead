@@ -20,7 +20,8 @@ from shareread.server.user import (user_by_cookie, authorize_google, userid_by_c
                                    remove_cookie, user_by_id, all_tags, merge_tags)
 from shareread.server.file import (create_file)
 from shareread.document.metadata import extract_metadata_from_pdf
-from shareread.server.paper import (save_paper_entry, get_paper_entry)
+from shareread.server.paper import (save_paper_entry, get_paper_entry,
+                                    save_paper_url, get_filehash_by_url)
 import shareread.document.pdf2html as pdf2html
 from config import SHAREAD_DOMAIN
 
@@ -208,6 +209,7 @@ class PinSubmitHandler(web.RequestHandler):
         stream = urllib2.urlopen(link)
         data = stream.read()
         filehash = upload_file(self.userid, filename, ext, data)
+        save_paper_url(link, filehash)
         print '[pin]', filename, ext, filehash
         self.write({
             'filehash':filehash,
@@ -216,6 +218,30 @@ class PinSubmitHandler(web.RequestHandler):
             'response':'OK'
         })
 
+
+class PinStatusHandler(web.RequestHandler):
+    def post(self):
+        print '[pin status]'
+        link = self.get_argument('link')
+        filehash = get_filehash_by_url(link)
+        if filehash:
+            userid = self.userid
+            entry = get_file_entry(userid, filehash)
+            if entry:
+                self.write({
+                    'exists': 1,
+                    'filehash': filehash,
+                    'link': make_sharead_link(filehash),
+                    'filename': entry['filename']
+                })
+            else:
+                self.write({
+                    'exists': 0
+                })
+        else:
+            self.write({
+                'exists': 0
+            })
 
 
 class UploadSubmitHandler(web.RequestHandler):
@@ -343,6 +369,7 @@ handlers = [
     (r"/mustache/(.*)", web.StaticFileHandler, {"path": "frontend/static/mustache/"}),
     (r"/upload-submit", wrap_auth(UploadSubmitHandler)),
     (r"/pin-submit", wrap_auth(PinSubmitHandler)),
+    (r"/pin-status", wrap_auth(PinStatusHandler)),
     (r"/v/(.*)", wrap_auth(FileViewHandler)),
     (r"/file/update", wrap_auth(FileUpdateHandler)),
     (r"/file/meta", wrap_auth(FileMetaHandler)),

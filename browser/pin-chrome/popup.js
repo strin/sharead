@@ -14,6 +14,21 @@ var url = null;
 var SHAREAD_DOMAIN = 'http://localhost:5000';
 // var SHAREAD_DOMAIN = 'http://sharead-org.herokuapp.com';
 
+var cookie = localStorage.getItem('sharead-cookie');
+if(cookie) {
+  chrome.tabs.getSelected(null,function(tab) {
+    $.post(SHAREAD_DOMAIN + '/pin-status', {
+     'link': tab.url,
+     'cookie': cookie
+    }, function(data) {
+      if(data.exists == 1) {
+        $('#pin-area').html('Saved. <br> ' + '<a href=\'' 
+            + data.link + '\'>View on Sharead.</a>')
+      }
+    });
+  });
+} 
+
 // Check if there is CSS specified.
 storage.get('css', function(items) {
   console.log(items);
@@ -39,7 +54,7 @@ storage.get('css', function(items) {
   pin.on('click', function() {
     pin.text('Saving...');
     pin.prop('disabled', 'true');
-    submit_pin();
+    submit_pin(); 
   });
   message.innerHTML = pin;
 });
