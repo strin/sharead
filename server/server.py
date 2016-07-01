@@ -22,6 +22,7 @@ from shareread.server.file import (create_file)
 from shareread.document.metadata import extract_metadata_from_pdf
 from shareread.server.paper import (save_paper_entry, get_paper_entry)
 import shareread.document.pdf2html as pdf2html
+from config import SHAREAD_DOMAIN
 
 
 def wrap_template(template):
@@ -54,6 +55,14 @@ def make_cookie_token(service, access_token):
     cookie_raw = service + access_token + datetime.now().isoformat()
     cookie = hashlib.sha256(cookie_raw).hexdigest()
     return cookie
+
+
+def make_sharead_link(filehash):
+    '''
+    minimalistic implementation of sharing feature.
+    generate a link to sharead view of the paper
+    '''
+    return SHAREAD_DOMAIN + '/v/' + filehash
 
 
 def wrap_auth(Handler):
@@ -172,6 +181,7 @@ def upload_file(userid, filename, ext, data):
     print '[upload] creating file entry'
     add_recent_entry(userid, filehash, action_type=RECENTS_ADD,
                      action_date=None)
+    return filehash
 
 
 class LogoutHandler(web.RequestHandler):
@@ -201,6 +211,7 @@ class PinSubmitHandler(web.RequestHandler):
         print '[pin]', filename, ext, filehash
         self.write({
             'filehash':filehash,
+            'link': make_sharead_link(filehash),
             'filename':filename,
             'response':'OK'
         })

@@ -25,7 +25,7 @@ def set_testing_mode():
 
 
 def flush_db():
-    _redis_store.flushdb()
+    conn().flushdb()
 
 
 def loads(raw, default=None):
