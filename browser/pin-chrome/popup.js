@@ -11,8 +11,8 @@ var message = document.querySelector('#message');
 
 var url = null;
 
-var SHAREAD_DOMAIN = 'http://localhost:5000';
-// var SHAREAD_DOMAIN = 'http://sharead-org.herokuapp.com';
+// var SHAREAD_DOMAIN = 'http://localhost:5000';
+var SHAREAD_DOMAIN = 'http://sharead-org.herokuapp.com';
 
 var cookie = localStorage.getItem('sharead-cookie');
 if(cookie) {
