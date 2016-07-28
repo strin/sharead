@@ -1,6 +1,7 @@
 # stores metadata about pdf files.
 from shareread.server.db import KeyValueStore, SortedList
 import time
+import json
 from multiprocessing import Process
 
 kv_paper = lambda filehash: KeyValueStore('paper:' + filehash)
@@ -30,7 +31,7 @@ def inverse_indexing_once():
     scopes = KeyValueStore.scopes('paper:*')
     from nltk.tokenize import TweetTokenizer
     tokenizer = TweetTokenizer()
-    def make_dict(text, weight=1.):
+    def make_dict(text, weight=1., prefix_weight=0.):
         if not text:
             return {}
         words = tokenizer.tokenize(text.lower().strip())
@@ -40,7 +41,8 @@ def inverse_indexing_once():
                 prefix = word[:i]
                 if prefix not in result:
                     result[prefix] = 0.
-                result[prefix] += weight
+                result[prefix] += prefix_weight
+            result[word] += weight
         return result
 
     def merge_dict(dict1, dict2):
@@ -56,9 +58,19 @@ def inverse_indexing_once():
         meta = KeyValueStore(scope_name=scope)
         title = meta['title']
         abstract = meta.get('abstract', default='')
-        dict_title = make_dict(title, 6.)
-        dict_abstract = make_dict(abstract, 2.)
+
+        dict_title = make_dict(title, weight=6., prefix_weight=0.06)
+        dict_abstract = make_dict(abstract, weight=2., prefix_weight=0.02)
         final_dict = merge_dict(dict_title, dict_abstract)
+
+        authors = meta['authors']
+        print authors
+        if authors:
+            print authors
+            for author in authors:
+                dict_author = make_dict(author['first_name'] + ' ' + author['last_name'])
+                final_dict = merge_dict(dict_author, final_dict)
+
         kv_paperwords(filehash).update(final_dict)
 
 

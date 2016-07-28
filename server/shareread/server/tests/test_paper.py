@@ -23,6 +23,7 @@ def test_inverse_indexing():
     })
     save_paper_entry('example', {
         'title': 'Example',
+        'authors': [{"first_name": "Satoshi", "last_name": "Nakamoto"}]
     }) # a case where abstract does not exist.
     inverse_indexing_once()
     store = KeyValueStore('paperwords:bitcoin')
@@ -31,5 +32,6 @@ def test_inverse_indexing():
     # test query.
     assert(rank_by_inverted_words('bitcoin: peer-to-peer')[0] == 'bitcoin')
     assert(rank_by_inverted_words('probability semantic')[0] == 'swift')
+    assert(rank_by_inverted_words('satoshi')[0] == 'example')
     # print rank_by_inverted_words('')[0]
     # assert(False)
