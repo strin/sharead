@@ -4,3 +4,4 @@ wand
 redis
 fakeredis
 boto
+nltk
