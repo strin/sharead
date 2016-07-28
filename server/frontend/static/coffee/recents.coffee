@@ -23,8 +23,8 @@ $ ->
 								}
 							)
 					}
-					console.log('activity', activity)
-					console.log('view', view)
+					# console.log('activity', activity)
+					# console.log('view', view)
 					rendered = Mustache.render(template, view)
 					tpl = $(rendered)
 					tpl.appendTo(ul)
@@ -37,12 +37,12 @@ $ ->
 							(data) ->
 								return data.selected
 						)
-						tagsChosen = _.map(dataChosen, 
+						tags = _.map(dataChosen, 
 							(data) ->
 								return data.text
 						)
 						client.updateFile(filehash, {
-							tags: tagsChosen
+							tags: tags
 						})
 					).bind(this, tpl, filehash))
 
@@ -117,18 +117,45 @@ $ ->
 			hide_selected: true
 		})
 
-	$('#searchbar_selector').change(() ->
-		# searchbar change event.
+
+	
+	search = ->
+		if this.flag # a search query is in process
+			return
+		this.flag = true
+
+		# extact tags.
 		chosen = $('.searchbar .chosen-select').data('chosen')
 		dataChosen = _.filter(chosen.results_data, (data) ->
 			return data.selected;
 		)
-		tagsChosen = _.map(dataChosen, (data) ->
+		tags = _.map(dataChosen, (data) ->
 			return data.text;
 		)
 
-		if(tagsChosen.length > 0) # do filter.
-			client.searchFile(tagsChosen, render_activities)
-		else
+		# extract search text.
+		keywords = $('.searchbar input').val()
+
+		if tags.length == 0 and keywords == ""
 			client.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities)
-	)
+			this.flag = false
+		else
+			client.searchFile(tags, keywords, (->
+				this.flag = false
+				render_activities()
+			).bind(this))
+	
+	search.flag = false
+
+
+	$('#searchbar_selector').change(search);
+
+	addSearchTextHook = () -> 
+		selected = $('.searchbar input');
+		if selected.length == 0
+			setTimeout(addSearchTextHook, 10);
+		selected.on("change keyup paste", search);
+		return true;
+	setTimeout(addSearchTextHook, 10);
+	
+

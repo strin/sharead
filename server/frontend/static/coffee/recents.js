@@ -3,7 +3,7 @@
   var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   $(function() {
-    var NUM_ACTIVITIES_PER_FETCH, render_activities;
+    var NUM_ACTIVITIES_PER_FETCH, addSearchTextHook, render_activities, search;
     NUM_ACTIVITIES_PER_FETCH = 10;
     render_activities = function() {
       return $.get('mustache/recents-item.html', function(template) {
@@ -28,22 +28,20 @@
               };
             })
           };
-          console.log('activity', activity);
-          console.log('view', view);
           rendered = Mustache.render(template, view);
           tpl = $(rendered);
           tpl.appendTo(ul);
           tpl.find('.recents-tag').change((function(tpl, filehash) {
-            var chosen, dataChosen, tagsChosen;
+            var chosen, dataChosen, tags;
             chosen = tpl.find('.recents-tag').data('chosen');
             dataChosen = _.filter(chosen.results_data, function(data) {
               return data.selected;
             });
-            tagsChosen = _.map(dataChosen, function(data) {
+            tags = _.map(dataChosen, function(data) {
               return data.text;
             });
             return client.updateFile(filehash, {
-              tags: tagsChosen
+              tags: tags
             });
           }).bind(this, tpl, filehash));
           tpl.mouseenter((function(tpl) {
@@ -108,21 +106,42 @@
         hide_selected: true
       });
     });
-    return $('#searchbar_selector').change(function() {
-      var chosen, dataChosen, tagsChosen;
+    search = function() {
+      var chosen, dataChosen, keywords, tags;
+      if (this.flag) {
+        return;
+      }
+      this.flag = true;
       chosen = $('.searchbar .chosen-select').data('chosen');
       dataChosen = _.filter(chosen.results_data, function(data) {
         return data.selected;
       });
-      tagsChosen = _.map(dataChosen, function(data) {
+      tags = _.map(dataChosen, function(data) {
         return data.text;
       });
-      if (tagsChosen.length > 0) {
-        return client.searchFile(tagsChosen, render_activities);
+      keywords = $('.searchbar input').val();
+      if (tags.length === 0 && keywords === "") {
+        client.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities);
+        return this.flag = false;
       } else {
-        return client.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities);
+        return client.searchFile(tags, keywords, (function() {
+          this.flag = false;
+          return render_activities();
+        }).bind(this));
       }
-    });
+    };
+    search.flag = false;
+    $('#searchbar_selector').change(search);
+    addSearchTextHook = function() {
+      var selected;
+      selected = $('.searchbar input');
+      if (selected.length === 0) {
+        setTimeout(addSearchTextHook, 10);
+      }
+      selected.on("change keyup paste", search);
+      return true;
+    };
+    return setTimeout(addSearchTextHook, 10);
   });
 
 }).call(this);

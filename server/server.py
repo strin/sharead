@@ -311,7 +311,6 @@ class FileMetaHandler(web.RequestHandler):
     def post(self):
         filehashes = json.loads(self.get_argument('filehashes'))
         meta_by_filehash = load_meta_by_filehash(self, *filehashes)
-        print 'meta', meta_by_filehash
         self.write({
             'meta_by_filehash': meta_by_filehash
         })
@@ -352,6 +351,8 @@ class SearchHandler(web.RequestHandler):
     def post(self):
         tags = json.loads(self.get_argument('tags'))
         keywords = json.loads(self.get_argument('keywords'))
+        print 'tags', tags
+        print 'keywords', keywords
         filehashes = filter_by_inverted_index(self.userid, tags)
         filehashes = list(filehashes) # json convertible.
         print 'search filehashes', filehashes

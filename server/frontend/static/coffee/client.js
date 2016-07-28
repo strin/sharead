@@ -33,12 +33,12 @@
         return callback();
       });
     },
-    searchFile: function(tags, callback) {
+    searchFile: function(tags, keywords, callback) {
       var client;
       client = this;
       return $.post('search', {
         tags: JSON.stringify(tags),
-        keywords: JSON.stringify("")
+        keywords: JSON.stringify(keywords)
       }, function(response) {
         store.setActiveFilehashes(response.filehashes);
         return client.fetchFileMeta(response.filehashes, function(response) {

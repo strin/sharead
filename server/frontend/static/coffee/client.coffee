@@ -35,11 +35,11 @@ window.client = {
 		)
 	,
 
-	searchFile: (tags, callback) ->
+	searchFile: (tags, keywords, callback) ->
 		client = this
 		$.post('search', {
 			tags: JSON.stringify(tags),
-			keywords: JSON.stringify("")
+			keywords: JSON.stringify(keywords)
 		}, (response) ->
 			store.setActiveFilehashes(response.filehashes)
 			# fetch relavant meta data.
