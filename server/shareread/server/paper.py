@@ -76,7 +76,7 @@ def inverse_indexing_once():
 
 def inverse_indexing_process():
     count = 0
-    print_freq = 100
+    print_freq = 5
     while True:
         inverse_indexing_once()
         count += 1
