@@ -36,9 +36,11 @@ def inverse_indexing_once():
         words = tokenizer.tokenize(text.lower().strip())
         result = {}
         for word in words:
-            if word not in result:
-                result[word] = 0.
-            result[word] += weight
+            for i in range(1, len(word)):
+                prefix = word[:i]
+                if prefix not in result:
+                    result[prefix] = 0.
+                result[prefix] += weight
         return result
 
     def merge_dict(dict1, dict2):
