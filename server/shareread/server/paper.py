@@ -2,6 +2,7 @@
 from shareread.server.db import KeyValueStore, SortedList
 import time
 import json
+import traceback
 from multiprocessing import Process
 
 kv_paper = lambda filehash: KeyValueStore('paper:' + filehash)
@@ -42,6 +43,8 @@ def inverse_indexing_once():
                 if prefix not in result:
                     result[prefix] = 0.
                 result[prefix] += prefix_weight
+            if word not in result:
+                result[word] = 0.
             result[word] += weight
         return result
 
@@ -78,7 +81,11 @@ def inverse_indexing_process():
     count = 0
     print_freq = 5
     while True:
-        inverse_indexing_once()
+        try:
+            inverse_indexing_once()
+        except Exception as e:
+            print '[inverse indexing] error: ', e.message
+            traceback.print_exc()
         count += 1
         if count % print_freq == 0:
             print '[inverse indexing] updated %d times' % print_freq
