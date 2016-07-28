@@ -10,7 +10,7 @@
         var activity, filehash, fileid, i, len, ref, rendered, toggleLink, tpl, ul, view;
         $('#recents-container').html("");
         fileid = 0;
-        ref = store.activeFilehashes;
+        ref = store.activeFilehashes.slice(0, NUM_ACTIVITIES_PER_FETCH);
         for (i = 0, len = ref.length; i < len; i++) {
           filehash = ref[i];
           activity = store.metaByFilehash[filehash];

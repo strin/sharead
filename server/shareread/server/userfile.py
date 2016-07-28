@@ -100,7 +100,7 @@ def fetch_num_activities(userid, num_fetch):
     }
 
 
-def update_inverted_index(userid, tags, filehash):
+def update_inverted_tags(userid, tags, filehash):
     """
     update the inverted index table
     """
@@ -112,7 +112,7 @@ def update_inverted_index(userid, tags, filehash):
         kv_inverted(userid)[tag] = filehashes
 
 
-def filter_by_inverted_index(userid, tags):
+def filter_by_inverted_tags(userid, tags):
     """
     filter the filehashes based on the tags given
     """

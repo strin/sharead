@@ -42,6 +42,14 @@ class KeyValueStore(object):
     '''
     a simple model template for key-value stores.
     '''
+    @staticmethod
+    def scopes(pattern='*'):
+        '''
+        use pattern to match scopes
+        '''
+        return conn().keys(pattern)
+
+
     def __init__(self, scope_name=None):
         '''
         scope_name: scope of the key-value store.
@@ -63,8 +71,22 @@ class KeyValueStore(object):
         return loads(raw)
 
 
+    def get(self, key, default=None):
+        '''
+        usage: store.get(key, default=xxx)
+        return the value if key is found, else return default.
+        '''
+        if key in self:
+            return self[key]
+        return default
+
+
     def __contains__(self, key):
-        return key in self.conn
+        if self.scope_name:
+            raw = self.conn.hget(self.scope_name, key)
+            return raw is not None
+        else:
+            return raw in self.conn
 
 
     def __setitem__(self, key, value):

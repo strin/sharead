@@ -1,5 +1,5 @@
 '''
-tests for module shareread.server.file.
+tests for module shareread.server.userfile.
 '''
 import shareread.server.db as db
 from shareread.server.userfile import *

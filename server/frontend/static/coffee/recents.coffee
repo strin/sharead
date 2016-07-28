@@ -7,7 +7,7 @@ $ ->
 				$('#recents-container').html("")
 				# render items.
 				fileid = 0
-				for filehash in store.activeFilehashes
+				for filehash in store.activeFilehashes.slice(0, NUM_ACTIVITIES_PER_FETCH) # TODO: handle more activities by splitting them into pages.
 					activity = store.metaByFilehash[filehash]
 					ul = $('#recents-container')
 					view = {

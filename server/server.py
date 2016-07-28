@@ -13,7 +13,7 @@ from shareread.utils import Timer
 from shareread.server.utils import (parse_webkitform, parse_filename,
                                     create_thumbnail, get_thumbnail_path)
 from shareread.server.userfile import (create_file_entry, update_file_entry, get_file_entry,
-                                       add_recent_entry, update_inverted_index, filter_by_inverted_index,
+                                       add_recent_entry, update_inverted_tags, filter_by_inverted_tags,
                                        RECENTS_ADD, RECENTS_UPDATE, fetch_num_activities)
 from shareread.server.user import (user_by_cookie, authorize_google, userid_by_cookie,
                                    create_user_from_google, update_user_cookie,
@@ -21,7 +21,8 @@ from shareread.server.user import (user_by_cookie, authorize_google, userid_by_c
 from shareread.server.file import (create_file)
 from shareread.document.metadata import extract_metadata_from_pdf
 from shareread.server.paper import (save_paper_entry, get_paper_entry,
-                                    save_paper_url, get_filehash_by_url)
+                                    save_paper_url, get_filehash_by_url,
+                                    rank_by_inverted_words, InverseIndexingProcess)
 import shareread.document.pdf2html as pdf2html
 from config import SHAREAD_DOMAIN
 
@@ -296,7 +297,7 @@ class FileUpdateHandler(web.RequestHandler):
         update_file_entry(self.userid, filehash, **update_dict)
         add_recent_entry(self.userid, filehash, action_type=RECENTS_UPDATE)
         if 'tags' in update_dict: # update inverted-index table for search.
-            update_inverted_index(self.userid, update_dict['tags'], filehash)
+            update_inverted_tags(self.userid, update_dict['tags'], filehash)
             merge_tags(self.userid, update_dict['tags'])
 
         self.write({
@@ -353,9 +354,12 @@ class SearchHandler(web.RequestHandler):
         keywords = json.loads(self.get_argument('keywords'))
         print 'tags', tags
         print 'keywords', keywords
-        filehashes = filter_by_inverted_index(self.userid, tags)
-        filehashes = list(filehashes) # json convertible.
+        filehashes = None
+        if tags: # with tag restrictions.
+            filehashes = filter_by_inverted_tags(self.userid, tags)
+            filehashes = list(filehashes) # json convertible.
         print 'search filehashes', filehashes
+        filehashes = rank_by_inverted_words(keywords, filehashes)
         self.write({
             'filehashes': filehashes
         })
@@ -397,6 +401,11 @@ settings = {
 }
 
 if __name__ == "__main__":
+    # start inverse indexing.
+    inverse_indexing_process = InverseIndexingProcess()
+    inverse_indexing_process.start()
+
+    # start main application.
     application = web.Application(handlers, **settings)
     port = int(os.environ.get("PORT", 5000))
     application.listen(port, address="0.0.0.0")
