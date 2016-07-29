@@ -8,10 +8,10 @@
     render_activities = function() {
       return $.get('mustache/recents-item.html', function(template) {
         var filehashes;
-        $('#recents-container').html("");
         filehashes = store.activeFilehashes.slice(0, NUM_ACTIVITIES_PER_FETCH);
         return client.fetchFileMeta(filehashes, function(response) {
           var activity, filehash, fileid, i, len, rendered, toggleLink, tpl, ul, view;
+          $('#recents-container').html("");
           fileid = 0;
           for (i = 0, len = filehashes.length; i < len; i++) {
             filehash = filehashes[i];

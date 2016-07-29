@@ -3,11 +3,11 @@ $ ->
 	render_activities = -> 
 		$.get('mustache/recents-item.html',
 			(template) ->
-				# clear container.
-				$('#recents-container').html("")
 				# fetch relavant meta data.
 				filehashes = store.activeFilehashes.slice(0, NUM_ACTIVITIES_PER_FETCH)
 				client.fetchFileMeta(filehashes, (response) ->
+					# clear container.
+					$('#recents-container').html("")
 					# render items.
 					fileid = 0
 					for filehash in filehashes # TODO: handle more activities by splitting them into pages.
