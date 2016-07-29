@@ -121,6 +121,11 @@
         tags = [];
       }
       keywords = $('.searchbar input').val();
+      if (tags.length === tags_in_search.length && _.difference(tags, tags_in_search).length === 0 && keywords === keywords_in_search) {
+        return;
+      } else {
+        this.invalid = true;
+      }
       if (this.flag) {
         setTimeout(search, 10);
         return;
@@ -128,19 +133,17 @@
       this.flag = true;
       console.log('tags', tags);
       console.log('keywords', keywords);
-      if (tags.length === tags_in_search.length && _.difference(tags, tags_in_search).length === 0 && keywords === keywords_in_search) {
-        this.flag = false;
-        return;
-      } else {
-        tags_in_search = tags;
-        keywords_in_search = keywords;
-      }
+      this.invalid = false;
+      tags_in_search = tags;
+      keywords_in_search = keywords;
       if (tags.length === 0 && keywords === "") {
         client.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities);
         return this.flag = false;
       } else {
         return client.searchFile(tags, keywords, (function() {
-          render_activities();
+          if (!this.invalid) {
+            render_activities();
+          }
           return this.flag = false;
         }).bind(this));
       }

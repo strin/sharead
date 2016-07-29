@@ -136,6 +136,12 @@ $ ->
 		# extract search text.
 		keywords = $('.searchbar input').val()
 
+		if tags.length == tags_in_search.length and _.difference(tags, tags_in_search).length == 0 and
+		   keywords == keywords_in_search
+		    return
+		else
+		    this.invalid = true
+
 		# not a good practice to ensure unique access to critical section.
 		if this.flag # a search query is in process
 			setTimeout(search, 10)
@@ -144,20 +150,18 @@ $ ->
 		this.flag = true
 		console.log('tags', tags)
 		console.log('keywords', keywords)
-		if tags.length == tags_in_search.length and _.difference(tags, tags_in_search).length == 0 and
-		   keywords == keywords_in_search
-			this.flag = false
-			return
-		else
-			tags_in_search = tags
-			keywords_in_search = keywords
+		
+		this.invalid = false
+		tags_in_search = tags
+		keywords_in_search = keywords
 
 		if tags.length == 0 and keywords == ""
 			client.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities)
 			this.flag = false
 		else
 			client.searchFile(tags, keywords, (->				
-				render_activities()
+				if !this.invalid
+					render_activities()
 				this.flag = false
 			).bind(this))
 	
