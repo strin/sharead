@@ -118,12 +118,9 @@ $ ->
 		})
 
 
-	
+	tags_in_search = [];
+	keywords_in_search = '';
 	search = ->
-		if this.flag # a search query is in process
-			return
-		this.flag = true
-
 		# extact tags.
 		chosen = $('.searchbar .chosen-select').data('chosen')
 		dataChosen = _.filter(chosen.results_data, (data) ->
@@ -133,16 +130,35 @@ $ ->
 			return data.text;
 		)
 
+		if tags is null
+			tags = []
+
 		# extract search text.
 		keywords = $('.searchbar input').val()
+
+		# not a good practice to ensure unique access to critical section.
+		if this.flag # a search query is in process
+			setTimeout(search, 10)
+			return
+
+		this.flag = true
+		console.log('tags', tags)
+		console.log('keywords', keywords)
+		if tags.length == tags_in_search.length and _.difference(tags, tags_in_search).length == 0 and
+		   keywords == keywords_in_search
+			this.flag = false
+			return
+		else
+			tags_in_search = tags
+			keywords_in_search = keywords
 
 		if tags.length == 0 and keywords == ""
 			client.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities)
 			this.flag = false
 		else
-			client.searchFile(tags, keywords, (->
-				this.flag = false
+			client.searchFile(tags, keywords, (->				
 				render_activities()
+				this.flag = false
 			).bind(this))
 	
 	search.flag = false

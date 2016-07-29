@@ -3,7 +3,7 @@
   var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   $(function() {
-    var NUM_ACTIVITIES_PER_FETCH, addSearchTextHook, render_activities, search;
+    var NUM_ACTIVITIES_PER_FETCH, addSearchTextHook, keywords_in_search, render_activities, search, tags_in_search;
     NUM_ACTIVITIES_PER_FETCH = 10;
     render_activities = function() {
       return $.get('mustache/recents-item.html', function(template) {
@@ -106,12 +106,10 @@
         hide_selected: true
       });
     });
+    tags_in_search = [];
+    keywords_in_search = '';
     search = function() {
       var chosen, dataChosen, keywords, tags;
-      if (this.flag) {
-        return;
-      }
-      this.flag = true;
       chosen = $('.searchbar .chosen-select').data('chosen');
       dataChosen = _.filter(chosen.results_data, function(data) {
         return data.selected;
@@ -119,14 +117,31 @@
       tags = _.map(dataChosen, function(data) {
         return data.text;
       });
+      if (tags === null) {
+        tags = [];
+      }
       keywords = $('.searchbar input').val();
+      if (this.flag) {
+        setTimeout(search, 10);
+        return;
+      }
+      this.flag = true;
+      console.log('tags', tags);
+      console.log('keywords', keywords);
+      if (tags.length === tags_in_search.length && _.difference(tags, tags_in_search).length === 0 && keywords === keywords_in_search) {
+        this.flag = false;
+        return;
+      } else {
+        tags_in_search = tags;
+        keywords_in_search = keywords;
+      }
       if (tags.length === 0 && keywords === "") {
         client.fetchRecents(NUM_ACTIVITIES_PER_FETCH, render_activities);
         return this.flag = false;
       } else {
         return client.searchFile(tags, keywords, (function() {
-          this.flag = false;
-          return render_activities();
+          render_activities();
+          return this.flag = false;
         }).bind(this));
       }
     };

@@ -67,7 +67,6 @@ def inverse_indexing_once():
         final_dict = merge_dict(dict_title, dict_abstract)
 
         authors = meta['authors']
-        print authors
         if authors:
             print authors
             for author in authors:
