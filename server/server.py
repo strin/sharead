@@ -108,10 +108,10 @@ def wrap_auth(Handler):
     return WrappedHandler
 
 
-def load_meta_by_filehash(request, *filehashes):
+def load_meta_by_filehash(userid, *filehashes):
     meta_by_filehash = {}
     for filehash in filehashes:
-        file_entry = get_file_entry(request.userid, filehash)
+        file_entry = get_file_entry(userid, filehash)
         paper_entry = get_paper_entry(filehash)
         final_entry = file_entry
         # merge paper entry with file entry.
@@ -311,7 +311,13 @@ class FileMetaHandler(web.RequestHandler):
     """
     def post(self):
         filehashes = json.loads(self.get_argument('filehashes'))
-        meta_by_filehash = load_meta_by_filehash(self, *filehashes)
+        print '[meta]', filehashes
+        meta_by_filehash = load_meta_by_filehash(self.userid, *filehashes)
+        global _userid, _filehashes
+        _userid = self.userid
+        _filehashes = filehashes
+        import cProfile
+        cProfile.run('load_meta_by_filehash(_userid, *_filehashes)')
         self.write({
             'meta_by_filehash': meta_by_filehash
         })
