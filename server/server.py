@@ -316,8 +316,6 @@ class FileMetaHandler(web.RequestHandler):
         global _userid, _filehashes
         _userid = self.userid
         _filehashes = filehashes
-        import cProfile
-        cProfile.run('load_meta_by_filehash(_userid, *_filehashes)')
         self.write({
             'meta_by_filehash': meta_by_filehash
         })

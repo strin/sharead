@@ -9,6 +9,12 @@ window.client = {
 	,
 
 	fetchFileMeta: (filehashes, callback) ->
+		# ignore filehash already in meta_by_filehash.
+		new_filehashes = []
+		for filehash in filehashes
+			if filehash in store.metaByFilehash
+				continue
+			new_filehashes.push(filehash)
 		$.post('file/meta', {
 			filehashes: JSON.stringify(filehashes),
 		}, (response) ->
