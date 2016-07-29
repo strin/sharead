@@ -48,10 +48,7 @@ window.client = {
 			keywords: JSON.stringify(keywords)
 		}, (response) ->
 			store.setActiveFilehashes(response.filehashes)
-			# fetch relavant meta data.
-			client.fetchFileMeta(response.filehashes, (response) ->
-				callback()
-			)
+			callback()
 		)
 	,
 
@@ -64,10 +61,5 @@ window.client = {
 
 	fetchRecents: (num_activities, callback) ->
 		client = this;
-		client.fetchRecentFilehashes(num_activities, (response) ->
-			# fetch relavant meta data.
-			client.fetchFileMeta(response.filehashes, (response) ->
-				callback()
-			)
-		)
+		client.fetchRecentFilehashes(num_activities, callback)
 }

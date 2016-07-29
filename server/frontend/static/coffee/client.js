@@ -52,9 +52,7 @@
         keywords: JSON.stringify(keywords)
       }, function(response) {
         store.setActiveFilehashes(response.filehashes);
-        return client.fetchFileMeta(response.filehashes, function(response) {
-          return callback();
-        });
+        return callback();
       });
     },
     fetchHTMLView: function(static_url, callback) {
@@ -67,11 +65,7 @@
     fetchRecents: function(num_activities, callback) {
       var client;
       client = this;
-      return client.fetchRecentFilehashes(num_activities, function(response) {
-        return client.fetchFileMeta(response.filehashes, function(response) {
-          return callback();
-        });
-      });
+      return client.fetchRecentFilehashes(num_activities, callback);
     }
   };
 
