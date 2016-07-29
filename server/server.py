@@ -274,7 +274,7 @@ class FileDownloadHanlder(web.RequestHandler):
 
 class FileViewHandler(web.RequestHandler):
     def get(self, filehash):
-        metadata = load_meta_by_filehash(self, filehash)[filehash]
+        metadata = load_meta_by_filehash(self.userid, filehash)[filehash]
         return self.render('view.html',
                 filehash=filehash,
                 static_url=store.get_url('html/' + filehash),
