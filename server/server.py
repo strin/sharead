@@ -359,9 +359,10 @@ class SearchHandler(web.RequestHandler):
         print 'tags', tags
         print 'keywords', keywords
         filehashes = None
-        if tags: # with tag restrictions.
-            filehashes = filter_by_inverted_tags(self.userid, tags)
-            filehashes = list(filehashes) # json convertible.
+        if not tags:
+            tags = []
+        filehashes = filter_by_inverted_tags(self.userid, tags)
+        filehashes = list(filehashes) # json convertible.
         filehashes = rank_by_inverted_words(keywords, filehashes)
         print '[search] result as filehashes', filehashes
         self.write({

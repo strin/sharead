@@ -112,6 +112,12 @@ class KeyValueStore(object):
         return {k: self[k] for k in keys}
 
 
+    def keys(self):
+        if self.scope_name:
+            return self.conn.hkeys(self.scope_name)
+        else:
+            return self.conn.keys()
+
 
 class SortedList(object):
     '''

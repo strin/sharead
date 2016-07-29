@@ -112,11 +112,17 @@ def update_inverted_tags(userid, tags, filehash):
         kv_inverted(userid)[tag] = filehashes
 
 
-def filter_by_inverted_tags(userid, tags):
+def filter_by_inverted_tags(userid, tags=[]):
     """
     filter the filehashes based on the tags given
     """
     result = None
+    if not tags: # get all filehashes of the user.
+        prefix = 'meta:' + userid + ':'
+        filehashes = KeyValueStore.scopes(pattern=prefix + '*')
+        filehashes = [filehash[len(prefix):] for filehash in filehashes]
+        return set(filehashes)
+
     for tag in tags:
         filehashes = kv_inverted(userid)[tag]
         if filehashes:
