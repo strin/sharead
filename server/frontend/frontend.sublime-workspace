@@ -4,6 +4,18 @@
 		"selected_items":
 		[
 			[
+				"meta",
+				"meta_by_filehash"
+			],
+			[
+				"key",
+				"keywords"
+			],
+			[
+				"add",
+				"addSearchTextHook"
+			],
+			[
 				"toggle",
 				"toggleLink"
 			],
@@ -107,11 +119,40 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "template/index.html",
+			"settings":
+			{
+				"buffer_size": 1292,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "template/recents.html",
+			"settings":
+			{
+				"buffer_size": 5398,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "static/coffee/recents.js",
+			"settings":
+			{
+				"buffer_size": 6493,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "Packages/Better CoffeeScript/CoffeeScript.sublime-build",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
 	"command_palette":
 	{
-		"height": 87.0,
+		"height": 392.0,
+		"last_filter": "",
 		"selected_items":
 		[
 			[
@@ -155,7 +196,13 @@
 	},
 	"console":
 	{
-		"height": 125.0
+		"height": 125.0,
+		"history":
+		[
+			"exit",
+			"coffee",
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
 	},
 	"distraction_free":
 	{
@@ -166,8 +213,23 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
+	"expanded_folders":
+	[
+		"/Users/tianlins/Project/sharead/server/frontend/static",
+		"/Users/tianlins/Project/sharead/server/frontend/static/coffee",
+		"/Users/tianlins/Project/sharead/server/frontend/static/js",
+		"/Users/tianlins/Project/sharead/server/frontend/template"
+	],
 	"file_history":
 	[
+		"/Users/tianlins/Project/sharead/server/frontend/static/coffee/upload.coffee",
+		"/Users/tianlins/Project/sharead/server/frontend/static/coffee/client.coffee",
+		"/Users/tianlins/Project/sharead/server/frontend/static/coffee/store.coffee",
+		"/Users/tianlins/Project/sharead/server/frontend/static/coffee/recents.coffee",
+		"/Users/tianlins/Downloads/release3.2/data/conll14st-preprocessed.m2",
+		"/Users/tianlins/Project/sharead/server/frontend/static/coffee/recents.js",
+		"/Users/tianlins/Project/sharead/server/frontend/static/js/searchbar.min.js",
+		"/Users/tianlins/Project/sharead/server/frontend/template/recents.html",
 		"/Users/tianlins/Project/shareread/frontend/static/css/recents.css",
 		"/Users/tianlins/Project/shareread/frontend/static/css/searchbar.css",
 		"/Users/tianlins/Project/shareread/frontend/template/upload.html",
@@ -216,6 +278,15 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"fetchFileMeta",
+			"fetchFile",
+			"π",
+			"fetchFile",
+			"render_activities",
+			"render",
+			"NUM_ACTIVITIES_PER_FETCH",
+			"setActiveFilehashes",
+			"tagsChosen",
 			"recents-item-filename",
 			"search-field",
 			"data(",
@@ -267,8 +338,109 @@
 	"groups":
 	[
 		{
+			"selected": 1,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "template/index.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1292,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"encoding_helper_encoding": "UTF-8",
+							"encoding_thread_running": true,
+							"is_init_dirty_state": false,
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "template/recents.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5398,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								5168,
+								5168
+							]
+						],
+						"settings":
+						{
+							"encoding_helper_encoding": "UTF-8",
+							"encoding_thread_running": true,
+							"is_init_dirty_state": false,
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "static/coffee/recents.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6493,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"encoding_helper_encoding": "UTF-8",
+							"encoding_thread_running": true,
+							"is_init_dirty_state": false,
+							"origin_encoding": "ASCII",
+							"syntax": "Packages/Babel/JavaScript (Babel).sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -311,6 +483,12 @@
 	{
 		"height": 100.0
 	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "frontend.sublime-project",
 	"replace":
 	{
 		"height": 0.0
@@ -319,6 +497,7 @@
 	"select_file":
 	{
 		"height": 0.0,
+		"last_filter": "",
 		"selected_items":
 		[
 			[
@@ -334,16 +513,33 @@
 	},
 	"select_project":
 	{
+		"height": 500.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
 		"height": 0.0,
+		"last_filter": "",
 		"selected_items":
 		[
 		],
 		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
 	},
 	"show_minimap": true,
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
 	"side_bar_width": 150.0,
-	"status_bar_visible": true
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
 }
